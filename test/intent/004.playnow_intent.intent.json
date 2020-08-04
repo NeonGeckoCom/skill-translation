@@ -1,0 +1,7 @@
+{
+  "utterance": "proceed",
+  "intent_type": "playnow_intent",
+  "intent": {
+    "AgreementKeyword": "proceed"
+  }
+}

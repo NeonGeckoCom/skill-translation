@@ -1,0 +1,8 @@
+{
+  "utterance": "neon show me language menu",
+  "intent_type": "ShowLanguageMenu",
+  "intent": {
+    "Neon": "neon",
+    "ShowLanguageMenu": "show me language menu"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "utterance": "not now",
+  "intent_type": "not_now_intent",
+  "intent": {
+    "DeclineKeyword": "not now"
+  }
+}
