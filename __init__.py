@@ -31,7 +31,12 @@ from bs4 import BeautifulSoup
 from NGI.utilities import beautifulSoupHelper as bU
 from NGI.utilities import tkHelper
 # from mycroft.device import device
-from NGI.utilities.parseUtils import clean_utterance
+
+# TODO: Depreciate on next core update DM
+try:
+    from NGI.utilities.parseUtils import clean_quotes
+except Exception:
+    from NGI.utilities.parseUtils import clean_utterance as clean_quotes
 from mycroft.language import AmazonTranslator
 from mycroft.messagebus.message import Message
 from mycroft.skills.core import MycroftSkill, intent_handler
@@ -655,7 +660,7 @@ class TranslationNGI(MycroftSkill):
             else:
                 voice = self.configuration_available["ttsVoice"][lang][tts_gender]
             LOG.info(voice)
-            translated = clean_utterance(self.translator.translate(phrase_to_say, lang, "en"))
+            translated = clean_quotes(self.translator.translate(phrase_to_say, lang, "en"))
             LOG.info(translated)
             if self.gui_enabled:
                 self.gui.show_text(translated, phrase_to_say)
