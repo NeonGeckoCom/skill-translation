@@ -32,7 +32,7 @@ from NGI.utilities import beautifulSoupHelper as bU
 from NGI.utilities import tkHelper
 # from mycroft.device import device
 
-# TODO: Depreciate on next core update DM
+# TODO: Depreciate on next core update following 2008.0 DM
 try:
     from NGI.utilities.parseUtils import clean_quotes
 except Exception:
