@@ -1014,12 +1014,13 @@ class TranslationNGI(MycroftSkill):
         # LOG.info(word)
         LOG.info(f"primary={primary} | secondary={secondary}")
         # LOG.debug(message)
-        self.user_config.check_for_updates()
+        if not self.server:
+            self.user_config.check_for_updates()
         # user_dict = None
         nick = None
         flac_filename = None
         if self.server and message:
-            flac_filename = message.data.get("flac_filename", "")
+            flac_filename = message.context.get("flac_filename", "")
             nick = get_chat_nickname_from_filename(flac_filename)
         user_dict = self.build_user_dict(message)
 
