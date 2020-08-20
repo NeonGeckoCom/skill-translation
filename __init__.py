@@ -32,12 +32,8 @@ from NGI.utilities import beautifulSoupHelper as bU
 from NGI.utilities import tkHelper
 # from mycroft.device import device
 
-# TODO: Depreciate on next core update following 2008.0 DM
-try:
-    from NGI.utilities.parseUtils import clean_quotes
-except Exception:
-    from NGI.utilities.parseUtils import clean_utterance as clean_quotes
-from mycroft.language import AmazonTranslator
+from NGI.utilities.parseUtils import clean_quotes
+# from mycroft.language import AmazonTranslator
 from mycroft.messagebus.message import Message
 from mycroft.skills.core import MycroftSkill, intent_handler
 # from mycroft.util import check_for_signal, create_signal, get_cache_directory
@@ -992,9 +988,10 @@ class TranslationNGI(MycroftSkill):
             with open(join(abspath(dirname(__file__)), 'language_from_polly.txt'),
                       'wb+') as language_from_polly_file:
                 pickle.dump(self.language_list, language_from_polly_file)
-                with open(self.voc_path, 'w+') as entity:
-                    for i in list(self.language_list.keys()):
-                        entity.write(i + "\n")
+                # TODO: Handle additions only? scraped list is incomplete..
+                # with open(self.voc_path, 'w+') as entity:
+                #     for i in list(self.language_list.keys()):
+                #         entity.write(i + "\n")
 
         except FileNotFoundError as e:
             LOG.error(e)
