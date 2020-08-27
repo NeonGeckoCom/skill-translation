@@ -1117,7 +1117,7 @@ class TranslationNGI(MycroftSkill):
                 self.user_config.update_yaml_file("speech", "secondary_neon_voice", "", False, True)
                 LOG.debug("DM: Overwrite second")
             self.bus.emit(Message('check.yml.updates',
-                                  {"modified": ["ngi_user_info"]}, {"origin": "translations\.neon"}))
+                                  {"modified": ["ngi_user_info"]}, {"origin": "translation.neon"}))
 
         # Depreciated old method
         # Check that a language was passed
