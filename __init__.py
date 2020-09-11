@@ -656,7 +656,7 @@ class TranslationNGI(MycroftSkill):
             else:
                 voice = self.configuration_available["ttsVoice"][lang][tts_gender]
             LOG.info(voice)
-            translated = clean_quotes(self.translator.translate(phrase_to_say, lang, "en"))
+            translated = clean_quotes(self.translator.translate(phrase_to_say, lang, "en"))  # TODO: Internal lang DM
             LOG.info(translated)
             if self.gui_enabled:
                 self.gui.show_text(translated, phrase_to_say)
