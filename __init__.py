@@ -1424,8 +1424,7 @@ class TranslationNGI(MycroftSkill):
 
     def populate_method(self, m=None):
         self.check_for_signal("TK_active")
-        self.check_for_signal("CORE_isSpeaking")  # TODO: Depreciate this? DM
-        LOG.info("Got here!" + str(m))
+        # self.check_for_signal("CORE_isSpeaking")
         self.bus.emit(Message("mycroft.stop"))
         self.choose_lang(selection_made=m)
 
