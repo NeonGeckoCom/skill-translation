@@ -32,12 +32,8 @@ from NGI.utilities import beautifulSoupHelper as bU
 from NGI.utilities import tkHelper
 # from mycroft.device import device
 
-# TODO: Depreciate on next core update following 2008.0 DM
-try:
-    from NGI.utilities.parseUtils import clean_quotes
-except Exception:
-    from NGI.utilities.parseUtils import clean_utterance as clean_quotes
-from mycroft.language import AmazonTranslator
+from NGI.utilities.parseUtils import clean_quotes
+# from mycroft.language import AmazonTranslator
 from mycroft.messagebus.message import Message
 from mycroft.skills.core import MycroftSkill, intent_handler
 # from mycroft.util import check_for_signal, create_signal, get_cache_directory
@@ -660,7 +656,7 @@ class TranslationNGI(MycroftSkill):
             else:
                 voice = self.configuration_available["ttsVoice"][lang][tts_gender]
             LOG.info(voice)
-            translated = clean_quotes(self.translator.translate(phrase_to_say, lang, "en"))
+            translated = clean_quotes(self.translator.translate(phrase_to_say, lang, "en"))  # TODO: Internal lang DM
             LOG.info(translated)
             if self.gui_enabled:
                 self.gui.show_text(translated, phrase_to_say)
@@ -992,9 +988,10 @@ class TranslationNGI(MycroftSkill):
             with open(join(abspath(dirname(__file__)), 'language_from_polly.txt'),
                       'wb+') as language_from_polly_file:
                 pickle.dump(self.language_list, language_from_polly_file)
-                with open(self.voc_path, 'w+') as entity:
-                    for i in list(self.language_list.keys()):
-                        entity.write(i + "\n")
+                # TODO: Handle additions only? scraped list is incomplete..
+                # with open(self.voc_path, 'w+') as entity:
+                #     for i in list(self.language_list.keys()):
+                #         entity.write(i + "\n")
 
         except FileNotFoundError as e:
             LOG.error(e)
@@ -1120,7 +1117,7 @@ class TranslationNGI(MycroftSkill):
                 self.user_config.update_yaml_file("speech", "secondary_neon_voice", "", False, True)
                 LOG.debug("DM: Overwrite second")
             self.bus.emit(Message('check.yml.updates',
-                                  {"modified": ["ngi_user_info"]}, {"origin": "translations\.neon"}))
+                                  {"modified": ["ngi_user_info"]}, {"origin": "translation.neon"}))
 
         # Depreciated old method
         # Check that a language was passed
@@ -1427,8 +1424,7 @@ class TranslationNGI(MycroftSkill):
 
     def populate_method(self, m=None):
         self.check_for_signal("TK_active")
-        self.check_for_signal("CORE_isSpeaking")  # TODO: Depreciate this? DM
-        LOG.info("Got here!" + str(m))
+        # self.check_for_signal("CORE_isSpeaking")
         self.bus.emit(Message("mycroft.stop"))
         self.choose_lang(selection_made=m)
 

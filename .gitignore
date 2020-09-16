@@ -6,3 +6,6 @@
 *.pyc
 __pycache__/
 !.github/*
+language_from_stt.txt
+# TODO: Fix polly scraping DM
+#language_from_polly.txt
