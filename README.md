@@ -1,4 +1,4 @@
-# ![](https://0000.us/klatchat/app/files/neon_images/icons/neon_paw.png)translation
+# ![](https://0000.us/klatchat/app/files/neon_images/icons/neon_paw.png)Translation
 
 # Summary
 
@@ -68,15 +68,26 @@ STT (User Speech) options are:
 
 # How to Use
 
-Say `speak to me in * (and *)` in order to change your language settings. If your desired option has more than one
+Say:
+- speak to me in * (and *)
+
+in order to change your language settings. If your desired option has more than one
 dialect, Neon will draw a small table with options for you to choose from. Alternatively, you can say your preferred
-answer by saying `I prefer …`
+answer by saying:
+- I prefer ...
 
-You may also say `my language is *` to have Neon start speaking and listening in the requested language.
+You may also say:
+- my language is *
 
-Say `translate * to *` in order to get your desired single-word or phrase translations.
+to have Neon start speaking and listening in the requested language.
 
-You can also ask to hear back your current settings by saying `what are my language settings`
+Say:
+- translate * to *
+ 
+in order to get your desired single-word or phrase translations.
+
+You can also ask to hear back your current settings by saying:
+- what are my language settings
 
 # Location
 
