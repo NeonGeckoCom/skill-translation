@@ -28,7 +28,8 @@ from adapt.intent import IntentBuilder
 from bs4 import BeautifulSoup
 # from gitdb.util import join
 
-from NGI.utilities import beautifulSoupHelper as bU
+# from NGI.utilities import beautifulSoupHelper as bU
+from neon_utils import web_utils
 from NGI.utilities import tkHelper
 # from mycroft.device import device
 
@@ -978,8 +979,8 @@ class TranslationNGI(MycroftSkill):
                                  tag['id'] == "w179aac13c13b7")
             LOG.debug(html)
             LOG.debug(area_table)
-            self.language_list = (dict((bU.chunks([i.text.lower().replace("\n", "").replace(",", "") for i
-                                                   in area_table.findAll('td') if i.text != "\xa0"], 2))))
+            self.language_list = (dict((web_utils.chunks([i.text.lower().replace("\n", "").replace(",", "") for i
+                                                          in area_table.findAll('td') if i.text != "\xa0"], 2))))
             self.language_list = {**self.language_list, **self.extra_default}
         except Exception as e:
             LOG.error(e)
