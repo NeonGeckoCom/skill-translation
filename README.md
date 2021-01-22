@@ -1,14 +1,14 @@
-# ![](https://0000.us/klatchat/app/files/neon_images/icons/neon_paw.png)Translation
+# <img src='https://0000.us/klatchat/app/files/neon_images/icons/neon_skill.png' card_color="#FF8600" width="50" style="vertical-align:bottom">Translation
 
-# Summary
+## Summary
 
 This skill provides translation and switching TTS/STT languages functionality.
 
-# Requirements
+## Requirements
 
 No special required packages for this skill.
 
-# Description
+## Description
 
 Use this skill to switch between languages for your TTS or STT preferences and to get individual words or sentences translations. Note you can have two STT languages active at the same time. They are called `primary` and `secondary` languages. For example, you can have Neon reply to you in both English and Russian at the same time. The order will be determined by which language is set to primary.
 
@@ -66,7 +66,7 @@ STT (User Speech) options are:
 
 
 
-# How to Use
+## Examples
 
 Say:
 - speak to me in * (and *)
@@ -89,11 +89,11 @@ in order to get your desired single-word or phrase translations.
 You can also ask to hear back your current settings by saying:
 - what are my language settings
 
-# Location
+## Location
 
     ${skills}/translation.neon
 
-# Files
+## Files
 
     ${skills}/translation.neon/__init__.py  
     ${skills}/translation.neon/language_from_polly.txt  
@@ -126,11 +126,11 @@ You can also ask to hear back your current settings by saying:
 
   
 
-# Class Diagram
+## Class Diagram
 
 [Click Here](https://0000.us/klatchat/app/files/neon_images/class_diagrams/translation.png)
 
-# Available Intents
+## Available Intents
 <details>
 <summary>Show list</summary>
 <br>
@@ -323,7 +323,7 @@ You can also ask to hear back your current settings by saying:
 
 </details>  
 
-# Examples
+## Details
 
 ### Text
 
@@ -348,11 +348,11 @@ You can also ask to hear back your current settings by saying:
 
   
 
-# Contact Support
+## Contact Support
 
 Use the [link](https://neongecko.com/ContactUs) or [submit an issue on GitHub](https://help.github.com/en/articles/creating-an-issue)
 
-# Credits
+## Credits
 
 reginaneon [neongeckocom](https://neongecko.com/)
 
