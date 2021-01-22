@@ -1,0 +1,37 @@
+{
+    "title": "Translation",
+    "url": "https://github.com/NeonGeckoCom/translation.neon",
+    "summary": "This skill provides translation and switching TTS/STT languages functionality.",
+    "short_description": "This skill provides translation and switching TTS/STT languages functionality.",
+    "description": "Use this skill to switch between languages for your TTS or STT preferences and to get individual words or sentences translations. Note you can have two STT languages active at the same time. They are called `primary` and `secondary` languages. For example, you can have Neon reply to you in both English and Russian at the same time. The order will be determined by which language is set to primary. TTS (Neon Speech) options are: Danish Dutch English, Australian English, British English, Indian English, US English, Welsh French French, Canadian German Italian Japanese Korean Polish Portuguese, Brazilian Portuguese, European Russian Spanish, European Spanish, Mexican Spanish, US Swedish Turkish Chinese STT (User Speech) options are: Arabic Chinese (Simplified) Chinese (Traditional) Czech Danish Dutch English Finnish French German Hebrew Indonesian Italian Japanese Korean Polish Portuguese Russian Spanish Swedish Turkish",
+    "examples": [
+        "speak to me in * (and *)",
+        "i prefer ...",
+        "my language is *",
+        "translate * to *",
+        "what are my language settings"
+    ],
+    "desktopFile": false,
+    "warning": "",
+    "systemDeps": false,
+    "platforms": [
+        "i386",
+        "x86_64",
+        "ia64",
+        "arm64",
+        "arm"
+    ],
+    "branch": "master",
+    "license": "NeonAI License v1.0",
+    "icon": "https://0000.us/klatchat/app/files/neon_images/icons/neon_skill.png",
+    "category": "",
+    "categories": [
+        ""
+    ],
+    "tags": [
+        ""
+    ],
+    "skillname": "Translation",
+    "authorname": "NeonGeckoCom",
+    "foldername": "translation.neon"
+}

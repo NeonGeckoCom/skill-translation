@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # NEON AI (TM) SOFTWARE, Software Development Kit & Application Development System
 #
-# Copyright 2008-2020 Neongecko.com Inc. | All Rights Reserved
+# Copyright 2008-2021 Neongecko.com Inc. | All Rights Reserved
 #
 # Notice of License - Duplicating this Notice of License near the start of any file containing
 # a derivative of this software is a condition of license for this software.
@@ -15,7 +15,7 @@
 # Authors: Guy Daniels, Daniel McKnight, Regina Bloomstine, Elon Gasper, Richard Leeds
 #
 # Specialized conversational reconveyance options from Conversation Processing Intelligence Corp.
-# US Patents 2008-2020: US7424516, US20140161250, US20140177813, US8638908, US8068604, US8553852, US10530923, US10530924
+# US Patents 2008-2021: US7424516, US20140161250, US20140177813, US8638908, US8068604, US8553852, US10530923, US10530924
 # China Patent: CN102017585  -  Europe Patent: EU2156652  -  Patents Pending
 
 import pathlib
@@ -28,7 +28,8 @@ from adapt.intent import IntentBuilder
 from bs4 import BeautifulSoup
 # from gitdb.util import join
 
-from NGI.utilities import beautifulSoupHelper as bU
+# from NGI.utilities import beautifulSoupHelper as bU
+from neon_utils import web_utils
 from NGI.utilities import tkHelper
 # from mycroft.device import device
 
@@ -978,8 +979,8 @@ class TranslationNGI(MycroftSkill):
                                  tag['id'] == "w179aac13c13b7")
             LOG.debug(html)
             LOG.debug(area_table)
-            self.language_list = (dict((bU.chunks([i.text.lower().replace("\n", "").replace(",", "") for i
-                                                   in area_table.findAll('td') if i.text != "\xa0"], 2))))
+            self.language_list = (dict((web_utils.chunks([i.text.lower().replace("\n", "").replace(",", "") for i
+                                                          in area_table.findAll('td') if i.text != "\xa0"], 2))))
             self.language_list = {**self.language_list, **self.extra_default}
         except Exception as e:
             LOG.error(e)
