@@ -33,14 +33,14 @@ from neon_utils import web_utils
 from NGI.utilities import tkHelper
 # from mycroft.device import device
 
-from NGI.utilities.parseUtils import clean_quotes
+from neon_utils.parse_utils import clean_quotes
 # from mycroft.language import AmazonTranslator
 from mycroft.messagebus.message import Message
 from mycroft.skills.core import MycroftSkill, intent_handler
 # from mycroft.util import check_for_signal, create_signal, get_cache_directory
 from mycroft.util.log import LOG
 
-from NGI.utilities.chat_user_util import get_chat_nickname_from_filename
+# from NGI.utilities.chat_user_util import get_chat_nickname_from_filename
 #     from socketIO_client import SocketIO
 #
 #     css = SocketIO('https://localhost', 8888, verify=False)
@@ -138,7 +138,7 @@ class TranslationNGI(MycroftSkill):
             self.user_config.update_yaml_file("speech", "secondary_tts_language", "", True)
             self.user_config.update_yaml_file("speech", "secondary_neon_voice", "", True)
             self.user_config.update_yaml_file("speech", "secondary_tts_gender", "", final=True)
-            self.create_signal("TTS_voice_switch")
+            self.create_signal("TTS_voice_switch")  # TODO: Use seaker param and skip this! DM
         self.speak_dialog("OnlyOneLanguage", private=True)
 
     @intent_handler(IntentBuilder("SettingsLanguage").require("Settings"))
@@ -194,7 +194,7 @@ class TranslationNGI(MycroftSkill):
                     language = self.stt_dict[lang]
                     break
         self.speak_dialog("ChangeSttLanguage", {"language": message.data.get("stt_language")}, private=True)
-        self.write_stt_change(language, message)
+        self._write_stt_change(language, message)
 
         # if self.server:
         #     chat_filename = message.data.get('flac_filename')
@@ -485,7 +485,7 @@ class TranslationNGI(MycroftSkill):
         else:
             overwrite_second = False
 
-        self.create_signal("TTS_voice_switch")
+        self.create_signal("TTS_voice_switch")  # TODO: Use seaker param and skip this! DM
         # request = str(message.data.get("utterance")).replace("to ", '') if "to" in str(message.data.get("utterance"))
         #     else str(message.data.get("utterance"))
         utt = str(message.data.get("utterance"))
@@ -808,14 +808,14 @@ class TranslationNGI(MycroftSkill):
         @param message: message object associated with intent match
         @return:
         """
-        self.create_signal("TTS_voice_switch")
+        self.create_signal("TTS_voice_switch")  # TODO: Use seaker param and skip this! DM
         new_lang = self._check_if_valid_language(message.data.get('language'))
         LOG.info(new_lang)
         language = list(new_lang.values())[0]
         # gender = [x for x in message.data.get("utterance").split(" ") if x in ["male", "female"]]
         # LOG.info(gender)
         gender = self.preference_speech(message).get("tts_gender", self.default_gender)
-        self.write_stt_change(language, message, do_emit=False)
+        self._write_stt_change(language, message, do_emit=False)
         self.switch_tts_voice([language, gender], message=message, overwrite_second=True)
         # if self.server:
         #     flac_filename = message.data.get("flac_filename")
@@ -922,7 +922,7 @@ class TranslationNGI(MycroftSkill):
                     require("I_prefer").optionally("gender").optionally("language")
                     .optionally("gender"))
     def choose_lang(self, message=None, selection_made=None):
-        self.create_signal("TTS_voice_switch")
+        self.create_signal("TTS_voice_switch")  # TODO: Use seaker param and skip this! DM
         # flac_filename = message.data.get('flac_filename')
         preference_speech = self.preference_speech(message)
         # config = self.user_info_available
@@ -1015,11 +1015,10 @@ class TranslationNGI(MycroftSkill):
         if not self.server:
             self.user_config.check_for_updates()
         # user_dict = None
-        nick = None
         flac_filename = None
         if self.server and message:
             flac_filename = message.context.get("flac_filename", "")
-            nick = get_chat_nickname_from_filename(flac_filename)
+        nick = self.get_utterance_user(message)
         user_dict = self.build_user_dict(message)
 
         # Set Default Voice Values
@@ -1056,12 +1055,13 @@ class TranslationNGI(MycroftSkill):
                 #           f"{user_dict['secondary_tts_gender']}")
 
             # Update nick_profiles for the rest of this interaction
-            message.context["nick_profiles"][nick]["tts_language"] = user_dict['tts_language']
-            message.context["nick_profiles"][nick]["tts_gender"] = user_dict['tts_gender']
-            message.context["nick_profiles"][nick]["neon_voice"] = user_dict['neon_voice']
-            message.context["nick_profiles"][nick]["secondary_tts_language"] = user_dict['secondary_tts_language']
-            message.context["nick_profiles"][nick]["secondary_tts_gender"] = user_dict['secondary_tts_gender']
-            message.context["nick_profiles"][nick]["secondary_neon_voice"] = user_dict['secondary_neon_voice']
+            message.context["nick_profiles"][nick]["speech"]["tts_language"] = user_dict['tts_language']
+            message.context["nick_profiles"][nick]["speech"]["tts_gender"] = user_dict['tts_gender']
+            message.context["nick_profiles"][nick]["speech"]["neon_voice"] = user_dict['neon_voice']
+            message.context["nick_profiles"][nick]["speech"]["secondary_tts_language"] =\
+                user_dict['secondary_tts_language']
+            message.context["nick_profiles"][nick]["speech"]["secondary_tts_gender"] = user_dict['secondary_tts_gender']
+            message.context["nick_profiles"][nick]["speech"]["secondary_neon_voice"] = user_dict['secondary_neon_voice']
 
             # Emit updated profile to server
             LOG.debug(user_dict)
@@ -1432,7 +1432,7 @@ class TranslationNGI(MycroftSkill):
     def stop(self):
         pass
 
-    def write_stt_change(self, setting, message, do_emit=True):
+    def _write_stt_change(self, setting, message, do_emit=True):
         """
         Writes new STT setting to user profile
         @param setting: (str) new language setting (i.e. "en-US")
@@ -1446,9 +1446,9 @@ class TranslationNGI(MycroftSkill):
         # self.create_signal("NGI_YAML_user_update")
         if self.server:
             flac_filename = message.context["flac_filename"]
-            nick = get_chat_nickname_from_filename(flac_filename)
-            message.context["nick_profiles"][nick]["stt_language"] = stt_language
-            message.context["nick_profiles"][nick]["stt_region"] = stt_region
+            nick = self.get_utterance_user(message)
+            message.context["nick_profiles"][nick]["speech"]["stt_language"] = stt_language
+            message.context["nick_profiles"][nick]["speech"]["stt_region"] = stt_region
             if do_emit:
                 user_dict = self.build_user_dict(message)
                 user_dict["stt_language"] = stt_language
