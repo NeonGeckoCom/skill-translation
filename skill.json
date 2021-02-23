@@ -21,6 +21,7 @@
         "system": {},
         "skill": []
     },
+    "incompatible_skills": [],
     "platforms": [
         "i386",
         "x86_64",
