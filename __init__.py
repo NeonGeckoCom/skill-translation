@@ -105,7 +105,7 @@ class TranslationNGI(MycroftSkill):
     def handle_no_secondary(self, message):
         # self.create_signal("NGI_YAML_user_update")
         if self.server:
-            flac_filename = message.context["flac_filename"]
+            # flac_filename = message.context["flac_filename"]
             # nick = get_chat_nickname_from_filename(flac_filename)
             user_dict = self.build_user_dict(message)
             user_dict['secondary_tts_language'] = user_dict['tts_language']
@@ -127,11 +127,13 @@ class TranslationNGI(MycroftSkill):
 
             # css.emit('ai tts secondary language change', user_dict['tts_language'], nick, flac_filename)
             LOG.info(user_dict)
-            ret = self.bus.wait_for_response(Message("css.emit",
-                                                     {"event": "update profile",
-                                                      "data": ("skill", user_dict, flac_filename)}),
-                                             "language_related_change", timeout=2)
-            LOG.debug(f"server response: {ret}")
+            self.socket_emit_to_server("update profile", ["skill", user_dict,
+                                                          message.context["klat_data"]["request_id"]])
+            # ret = self.bus.wait_for_response(Message("css.emit",
+            #                                          {"event": "update profile",
+            #                                           "data": ("skill", user_dict, flac_filename)}),
+            #                                  "language_related_change", timeout=2)
+            # LOG.debug(f"server response: {ret}")
             # self.socket_io_emit(event="update profile", kind="skill",
             #                     flac_filename=flac_filename, message=user_dict)
         else:
@@ -1015,9 +1017,9 @@ class TranslationNGI(MycroftSkill):
         if not self.server:
             self.user_config.check_for_updates()
         # user_dict = None
-        flac_filename = None
-        if self.server and message:
-            flac_filename = message.context.get("flac_filename", "")
+        # flac_filename = None
+        # if self.server and message:
+        #     flac_filename = message.context.get("flac_filename", "")
         nick = self.get_utterance_user(message)
         user_dict = self.build_user_dict(message)
 
@@ -1065,11 +1067,13 @@ class TranslationNGI(MycroftSkill):
 
             # Emit updated profile to server
             LOG.debug(user_dict)
-            ret = self.bus.wait_for_response(Message("css.emit",
-                                                     {"event": "update profile",
-                                                      "data": ("skill", user_dict, flac_filename)}),
-                                             "language_related_change", timeout=2)
-            LOG.debug(f"server response: {ret}")
+            self.socket_emit_to_server("update profile", ["skill", user_dict,
+                                                          message.context["klat_data"]["request_id"]])
+            # ret = self.bus.wait_for_response(Message("css.emit",
+            #                                          {"event": "update profile",
+            #                                           "data": ("skill", user_dict, flac_filename)}),
+            #                                  "language_related_change", timeout=2)
+            # LOG.debug(f"server response: {ret}")
 
             # self.socket_io_emit(event="update profile", kind="skill", flac_filename=flac_filename, message=user_dict)
             #
@@ -1445,7 +1449,7 @@ class TranslationNGI(MycroftSkill):
         stt_language, stt_region = setting.split('-', 1)
         # self.create_signal("NGI_YAML_user_update")
         if self.server:
-            flac_filename = message.context["flac_filename"]
+            # flac_filename = message.context["flac_filename"]
             nick = self.get_utterance_user(message)
             message.context["nick_profiles"][nick]["speech"]["stt_language"] = stt_language
             message.context["nick_profiles"][nick]["speech"]["stt_region"] = stt_region
@@ -1454,11 +1458,14 @@ class TranslationNGI(MycroftSkill):
                 user_dict["stt_language"] = stt_language
                 user_dict["stt_region"] = stt_region
                 LOG.debug(user_dict)
-                self.socket_io_emit(event="update profile", kind="skill",
-                                    flac_filename=flac_filename, message=user_dict)
+                self.socket_emit_to_server("update profile", ["skill", user_dict,
+                                                              message.context["klat_data"]["request_id"]])
+                # self.socket_io_emit(event="update profile", kind="skill",
+                #                     flac_filename=flac_filename, message=user_dict)
                 self.bus.wait_for_response(Message("css.emit",
                                                    {"event": "ai stt language change",
-                                                    "data": (f"{stt_language}-{stt_region}", nick, flac_filename)}),
+                                                    "data": (f"{stt_language}-{stt_region}", nick,
+                                                             message.context["klat_data"]["request_id"])}),
                                            "ai_stt_language_change", timeout=2)
         else:
             self.user_config.update_yaml_file("speech", "stt_language", stt_language, True)
