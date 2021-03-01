@@ -652,13 +652,13 @@ class TranslationNGI(MycroftSkill):
                 tts_gender = gender if gender else self.default_gender
             else:
                 tts_gender = self.default_gender
-            if self.server and lang == "zh-zh":
-                voice = self.configuration_available["ttsVoice"]["cmn"][tts_gender]
-            elif self.server:
-                voice = self.configuration_available["ttsVoice"][lang.split("-")[0]][tts_gender]
-            else:
-                voice = self.configuration_available["ttsVoice"][lang][tts_gender]
-            LOG.info(voice)
+            # if self.server and lang == "zh-zh":
+            #     voice = self.configuration_available["ttsVoice"]["cmn"][tts_gender]
+            # elif self.server:
+            #     voice = self.configuration_available["ttsVoice"][lang.split("-")[0]][tts_gender]
+            # else:
+            #     voice = self.configuration_available["ttsVoice"][lang][tts_gender]
+            # LOG.info(voice)
             translated = clean_quotes(self.translator.translate(phrase_to_say, lang, "en"))  # TODO: Internal lang DM
             LOG.info(translated)
             if self.gui_enabled:
@@ -667,7 +667,7 @@ class TranslationNGI(MycroftSkill):
             self.speak(translated, speaker={"name": "Neon",
                                             "language": lang,
                                             "gender": tts_gender,
-                                            "voice": voice,
+                                            # "voice": voice,
                                             "override_user": True,
                                             "translated": True},
                        meta={"untranslated": phrase_to_say,
