@@ -42,7 +42,7 @@ class TranslationNGI(MycroftSkill):
         self.check_for_signal("TR_secondary_language_options")
         self.voc_path = pathlib.Path(self.configuration_available["dirVars"]["skillsDir"]
                                      + "/translation.neon/vocab/en-us/language.voc")
-        self.temp_dir = self.configuration_available['dirVars']['tempDir']
+        # self.temp_dir = self.configuration_available['dirVars']['tempDir']
         self.default_gender = "female"
         self.extra_default = {"english": "en-us", "portuguese": "pt-pt", "spanish": "es-mx",
                               "chinese": "zh-zh", 'french': "fr-fr", "welsh": "cy-gb"}
