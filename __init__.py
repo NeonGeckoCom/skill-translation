@@ -95,6 +95,9 @@ class TranslationNGI(MycroftSkill):
             self.user_config.update_yaml_file("speech", "secondary_tts_language", "", True)
             self.user_config.update_yaml_file("speech", "secondary_neon_voice", "", True)
             self.user_config.update_yaml_file("speech", "secondary_tts_gender", "", final=True)
+            self.bus.emit(Message('check.yml.updates',
+                                  {"modified": ["ngi_user_info"]}, {"origin": "translation.neon"}))
+
             self.create_signal("TTS_voice_switch")  # TODO: Use speaker param and skip this! DM
         self.speak_dialog("OnlyOneLanguage", private=True)
 
