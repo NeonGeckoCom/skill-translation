@@ -42,7 +42,7 @@ class TranslationNGI(MycroftSkill):
         self.check_for_signal("TR_secondary_language_options")
         self.voc_path = pathlib.Path(self.configuration_available["dirVars"]["skillsDir"]
                                      + "/translation.neon/vocab/en-us/language.voc")
-        self.temp_dir = self.configuration_available['dirVars']['tempDir']
+        # self.temp_dir = self.configuration_available['dirVars']['tempDir']
         self.default_gender = "female"
         self.extra_default = {"english": "en-us", "portuguese": "pt-pt", "spanish": "es-mx",
                               "chinese": "zh-zh", 'french': "fr-fr", "welsh": "cy-gb"}
@@ -95,7 +95,10 @@ class TranslationNGI(MycroftSkill):
             self.user_config.update_yaml_file("speech", "secondary_tts_language", "", True)
             self.user_config.update_yaml_file("speech", "secondary_neon_voice", "", True)
             self.user_config.update_yaml_file("speech", "secondary_tts_gender", "", final=True)
-            self.create_signal("TTS_voice_switch")  # TODO: Use speaker param and skip this! DM
+            self.bus.emit(Message('check.yml.updates',
+                                  {"modified": ["ngi_user_info"]}, {"origin": "translation.neon"}))
+
+            # self.create_signal("TTS_voice_switch")
         self.speak_dialog("OnlyOneLanguage", private=True)
 
     @intent_handler(IntentBuilder("SettingsLanguage").require("Settings"))
@@ -324,7 +327,7 @@ class TranslationNGI(MycroftSkill):
         else:
             overwrite_second = False
 
-        self.create_signal("TTS_voice_switch")  # TODO: Use speaker param and skip this! DM
+        self.create_signal("TTS_voice_switch")  # TODO: Depreciated as of Core 2103 DM
         utt = str(message.data.get("utterance"))
         LOG.debug(f"{first} | {second}")  # ['japanese', 'female'] | ['english', 'female']
 
@@ -412,54 +415,7 @@ class TranslationNGI(MycroftSkill):
         # Handle phrase translation request
         # TODO: This is where translate is handled... Move to separate intent DM
         if "translate" in utt:
-            # Trim off language for "translate [phrase] to [lang]"
-            if " to " in utt:
-                request = " to ".join(utt.split(" to ")[:-1])
-            else:
-                request = utt
-            LOG.debug(request)
-            proposed = primary_language
-
-            options = {x: y for (x, y) in list(self.language_list.items()) if proposed in x and x not in
-                       self.extra_default}
-            LOG.info(f"DM: {options}")
-            default_options = {x: y for (x, y)
-                               in list(self.extra_default.items()) if x == proposed or proposed in x}
-
-            LOG.debug(f"DM: {proposed}")
-            LOG.debug(request)
-            phrase_to_say = request.replace(proposed, '').replace(message.data.get("TalkToMeKeyword"), '')
-            phrase_to_say = phrase_to_say.replace(message.data.get("Neon"), "") if message.data.get("Neon") else \
-                phrase_to_say
-            LOG.debug(f"DM: {phrase_to_say}")
-            phrase_to_say = phrase_to_say.strip()
-            LOG.info(phrase_to_say)
-            lang = options.get(proposed)
-            if not lang:
-                lang = default_options.get(proposed)
-            gender = primary_gender
-            LOG.info(list(self.language_list.keys())[list(self.language_list.values()).index(lang)].title())
-            self.speak_dialog('WordInLanguage',
-                              {'word': phrase_to_say.strip(),
-                               'language': list(self.language_list.keys())[
-                                   list(self.language_list.values()).index(lang)].title().capitalize()})
-            if gender or self.tts_gender == "female":
-                tts_gender = gender if gender else self.default_gender
-            else:
-                tts_gender = self.default_gender
-            translated = clean_quotes(self.translator.translate(phrase_to_say, lang, "en"))  # TODO: Internal lang DM
-            LOG.info(translated)
-            if self.gui_enabled:
-                self.gui.show_text(translated, phrase_to_say)
-                self.clear_gui_timeout()
-            self.speak(translated, speaker={"name": "Neon",
-                                            "language": lang,
-                                            "gender": tts_gender,
-                                            # "voice": voice,
-                                            "override_user": True,
-                                            "translated": True},
-                       meta={"untranslated": phrase_to_say,
-                             "is_translated": True})
+            self._translate_phrase(message, primary_language, primary_gender)
         else:
             LOG.debug(f"{first} | {second}")
             self.switch_tts_voice(first, second, message, overwrite_second)
@@ -505,7 +461,7 @@ class TranslationNGI(MycroftSkill):
         @param message: message object associated with intent match
         @return:
         """
-        self.create_signal("TTS_voice_switch")  # TODO: Use speaker param and skip this! DM
+        self.create_signal("TTS_voice_switch")  # TODO: Depreciated as of Core 2103 DM
         new_lang = self._check_if_valid_language(message.data.get('language'))
         LOG.info(new_lang)
         language = list(new_lang.values())[0]
@@ -513,6 +469,60 @@ class TranslationNGI(MycroftSkill):
         self._write_stt_change(language, message, do_emit=False)
         self.switch_tts_voice([language, gender], message=message, overwrite_second=True)
         self.speak_dialog("ChangePreferredLanguage", {"language": list(new_lang.keys())[0].capitalize()}, private=True)
+
+    @intent_handler(IntentBuilder("TranslatePhrase").optionally("Neon").
+                    require("Translate").require("language").optionally("gender"))
+    def handle_translate_phrase(self, message):
+        utt = message.data.get("utterance")
+        language = message.data.get("language")
+        gender = message.data.get("gender", self.preference_speech(message)["tts_gender"])
+        # Trim off language for "translate [phrase] to [lang]"
+        words: list = utt.split()
+        language_idx = words.index(language)
+        # Remove 'to language'
+        words.pop(language_idx)
+        words.pop(language_idx - 1)
+        request = " ".join(words)
+        LOG.debug(request)
+        proposed = language
+
+        options = {x: y for (x, y) in list(self.language_list.items()) if proposed in x and x not in
+                   self.extra_default}
+        LOG.info(f"DM: {options}")
+        default_options = {x: y for (x, y)
+                           in list(self.extra_default.items()) if x == proposed or proposed in x}
+
+        LOG.debug(f"DM: {proposed}")
+        LOG.debug(request)
+        phrase_to_say = request.replace(message.data.get("Translate", ''), '').replace(message.data.get("Neon", ''), "")
+        LOG.debug(f"DM: {phrase_to_say}")
+        phrase_to_say = phrase_to_say.strip()
+        LOG.info(phrase_to_say)
+        lang = options.get(proposed)
+        if not lang:
+            lang = default_options.get(proposed)
+
+        # LOG.info(list(self.language_list.keys())[list(self.language_list.values()).index(lang)].title())
+        self.speak_dialog('WordInLanguage',
+                          {'word': phrase_to_say.strip(),
+                           'language': list(self.language_list.keys())[
+                               list(self.language_list.values()).index(lang)].title().capitalize()})
+        if gender or self.tts_gender == "female":
+            tts_gender = gender if gender else self.default_gender
+        else:
+            tts_gender = self.default_gender
+        translated = clean_quotes(self.translator.translate(phrase_to_say, lang, "en"))  # TODO: Internal lang DM
+        LOG.info(translated)
+        if self.gui_enabled:
+            self.gui.show_text(translated, phrase_to_say)
+            self.clear_gui_timeout()
+        self.speak(translated, speaker={"name": "Neon",
+                                        "language": lang,
+                                        "gender": tts_gender,
+                                        "override_user": True,
+                                        "translated": True},
+                   meta={"untranslated": phrase_to_say,
+                         "is_translated": True})
 
     def _parse_two_languages(self, languages, gender=None, message=None):
         """
@@ -598,7 +608,7 @@ class TranslationNGI(MycroftSkill):
                     require("I_prefer").optionally("gender").optionally("language")
                     .optionally("gender"))
     def choose_lang(self, message=None, selection_made=None):
-        self.create_signal("TTS_voice_switch")  # TODO: Use speaker param and skip this! DM
+        self.create_signal("TTS_voice_switch")  # TODO: Depreciated as of Core 2103 DM
         preference_speech = self.preference_speech(message)
         self.check_for_signal("TK_active")
         self.bus.emit(Message("mycroft.stop"))
