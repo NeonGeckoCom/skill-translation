@@ -30,12 +30,12 @@ from neon_utils import web_utils
 from neon_utils.parse_utils import clean_quotes
 
 from NGI.utilities import tkHelper
-from mycroft.messagebus.message import Message
-from mycroft.skills.core import MycroftSkill, intent_handler
-from mycroft.util.log import LOG
+from mycroft_bus_client import Message
+from mycroft.skills.core import intent_handler
+from neon_utils.skills.neon_skill import NeonSkill, LOG
 
 
-class TranslationNGI(MycroftSkill):
+class TranslationNGI(NeonSkill):
     def __init__(self):
         super(TranslationNGI, self).__init__(name="TranslationNGI")
         self.region = 'us-west-2'
@@ -728,7 +728,6 @@ class TranslationNGI(MycroftSkill):
             message.context["nick_profiles"][nick]["speech"]["secondary_tts_language"] =\
                 user_dict['secondary_tts_language']
             message.context["nick_profiles"][nick]["speech"]["secondary_tts_gender"] = user_dict['secondary_tts_gender']
-            # message.context["nick_profiles"][nick]["speech"]["secondary_neon_voice"] = user_dict['secondary_neon_voice']
 
             # Emit updated profile to server
             LOG.debug(user_dict)
