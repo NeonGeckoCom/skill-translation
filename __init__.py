@@ -412,46 +412,41 @@ class TranslationNGI(NeonSkill):
                     LOG.error(f"{proposed} not found in languages!")
                     return
 
-        # Handle phrase translation request
-        # TODO: This is where translate is handled... Move to separate intent DM
-        if "translate" in utt:
-            self._translate_phrase(message, primary_language, primary_gender)
-        else:
-            LOG.debug(f"{first} | {second}")
-            self.switch_tts_voice(first, second, message, overwrite_second)
+        LOG.debug(f"{first} | {second}")
+        self.switch_tts_voice(first, second, message, overwrite_second)
 
-            # Language options are available
-            if options_available:
-                # two languages with options for one
-                if first and second:
-                    self.speak_dialog("SwitchPrimaryAndSecondary", {"primary_gender": primary_gender,
-                                                                    "primary_language": primary_language,
-                                                                    "second_gender": second_gender,
-                                                                    "second_language": second_language}, private=True)
-                    self.speak_dialog("TwoLanguagesDialectOptions", {"language": options_language.capitalize()},
-                                      True, private=True)
-                # one language with options
-                else:
-                    self.speak_dialog("SwitchLanguageDialectOptions", {"language": options_language.capitalize()},
-                                      True, private=True)
-                self.enable_intent("LangMenu")
-                self.request_check_timeout(30, "LangMenu")
-
-            # Standard switch language dialog
+        # Language options are available
+        if options_available:
+            # two languages with options for one
+            if first and second:
+                self.speak_dialog("SwitchPrimaryAndSecondary", {"primary_gender": primary_gender,
+                                                                "primary_language": primary_language,
+                                                                "second_gender": second_gender,
+                                                                "second_language": second_language}, private=True)
+                self.speak_dialog("TwoLanguagesDialectOptions", {"language": options_language.capitalize()},
+                                  True, private=True)
+            # one language with options
             else:
-                if first and second:
-                    self.speak_dialog("SwitchPrimaryAndSecondary", {"primary_gender": primary_gender,
-                                                                    "primary_language": primary_language,
-                                                                    "second_gender": second_gender,
-                                                                    "second_language": second_language}, private=True)
-                elif first:
-                    self.speak_dialog("SwitchLanguage", {"language": primary_language,
-                                                         "gender": primary_gender,
-                                                         "primary": "primary"}, private=True)
-                elif second:
-                    self.speak_dialog("SwitchLanguage", {"language": second_language,
-                                                         "gender": second_gender,
-                                                         "primary": "secondary"}, private=True)
+                self.speak_dialog("SwitchLanguageDialectOptions", {"language": options_language.capitalize()},
+                                  True, private=True)
+            self.enable_intent("LangMenu")
+            self.request_check_timeout(30, "LangMenu")
+
+        # Standard switch language dialog
+        else:
+            if first and second:
+                self.speak_dialog("SwitchPrimaryAndSecondary", {"primary_gender": primary_gender,
+                                                                "primary_language": primary_language,
+                                                                "second_gender": second_gender,
+                                                                "second_language": second_language}, private=True)
+            elif first:
+                self.speak_dialog("SwitchLanguage", {"language": primary_language,
+                                                     "gender": primary_gender,
+                                                     "primary": "primary"}, private=True)
+            elif second:
+                self.speak_dialog("SwitchLanguage", {"language": second_language,
+                                                     "gender": second_gender,
+                                                     "primary": "secondary"}, private=True)
 
     @intent_handler(IntentBuilder("SetPreferredLanguage").optionally("Neon").require("PreferredLanguage")
                     .require("language").build())
@@ -750,10 +745,9 @@ class TranslationNGI(NeonSkill):
                 self.user_config.update_yaml_file("speech", "secondary_tts_gender", "", True, False)
                 self.user_config.update_yaml_file("speech", "secondary_neon_voice", "", False, True)
                 # LOG.debug("Overwrite second")
-            else:
-                self.user_config.update_yaml_file(final=True)
-            self.bus.emit(Message('check.yml.updates',
-                                  {"modified": ["ngi_user_info"]}, {"origin": "translation.neon"}))
+            self.user_config.write_changes()
+            # self.bus.emit(Message('check.yml.updates',
+            #                       {"modified": ["ngi_user_info"]}, {"origin": "translation.neon"}))
 
     def multiple_options(self):
         for i in list(self.options.keys()):
@@ -789,7 +783,7 @@ class TranslationNGI(NeonSkill):
         @param do_emit: (Boolean) server use, emit updated profile to server (False if more changes expected)
         @return: None
         """
-        import os
+        # import os
         LOG.info(setting)
         stt_language, stt_region = setting.split('-', 1)
         if self.server:
@@ -811,8 +805,8 @@ class TranslationNGI(NeonSkill):
         else:
             self.user_config.update_yaml_file("speech", "stt_language", stt_language, True)
             self.user_config.update_yaml_file("speech", "stt_region", stt_region, final=True)
-            os.system("sudo -H -u " + self.configuration_available['devVars']['installUser'] + ' ' +
-                      self.configuration_available['dirVars']['coreDir'] + "/start_neon.sh voice")
+            # os.system("sudo -H -u " + self.configuration_available['devVars']['installUser'] + ' ' +
+            #           self.configuration_available['dirVars']['coreDir'] + "/start_neon.sh voice")
 
 
 def create_skill():
