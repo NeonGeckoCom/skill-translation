@@ -20,7 +20,7 @@
 
 import pathlib
 import pickle
-import time
+# import time
 import urllib.request
 
 from os.path import join, abspath, dirname
@@ -29,7 +29,7 @@ from bs4 import BeautifulSoup
 from neon_utils import web_utils
 from neon_utils.parse_utils import clean_quotes
 
-from NGI.utilities import tkHelper
+# from NGI.utilities import tkHelper
 from mycroft_bus_client import Message
 from mycroft.skills.core import intent_handler
 from neon_utils.skills.neon_skill import NeonSkill, LOG
@@ -756,19 +756,19 @@ class TranslationNGI(NeonSkill):
         self.speak_dialog("AskPreferred", expect_response=True, private=True)
         self.enable_intent("I_prefer")
 
-        if not self.server:
-            test = tkHelper.CreateTable()
-            test.add_buttons(list(self.options.keys()))
-
-            param = test.start_table()
-            LOG.info(param)
-            self.check_for_signal("TK_active")
-            self.check_for_signal("Button_Press")
-            time.sleep(1)
-            self.populate_method(param) if param else LOG.info("I prefer used")
+        # if not self.server:
+        #     test = tkHelper.CreateTable()
+        #     test.add_buttons(list(self.options.keys()))
+        #
+        #     param = test.start_table()
+        #     LOG.info(param)
+        #     self.check_for_signal("TK_active")
+        #     self.check_for_signal("Button_Press")
+        #     time.sleep(1)
+        #     self.populate_method(param) if param else LOG.info("I prefer used")
 
     def populate_method(self, m=None):
-        self.check_for_signal("TK_active")
+        # self.check_for_signal("TK_active")
         self.bus.emit(Message("mycroft.stop"))
         self.choose_lang(selection_made=m)
 
