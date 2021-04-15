@@ -46,11 +46,11 @@ class TranslationNGI(NeonSkill):
         self.default_gender = "female"
         self.extra_default = {"english": "en-us", "portuguese": "pt-pt", "spanish": "es-mx",
                               "chinese": "zh-zh", 'french': "fr-fr", "welsh": "cy-gb"}
-        self.tts_language = self.user_info_available['speech']["tts_language"].lower()
-        self.tts_gender = self.user_info_available['speech']["tts_gender"] \
-            if self.user_info_available['speech']["tts_gender"] else self.default_gender
-        self.two_gender = self.user_info_available['speech']["secondary_tts_gender"] \
-            if self.user_info_available['speech']["secondary_tts_gender"] else self.default_gender
+        # self.tts_language = self.user_info_available['speech']["tts_language"].lower()
+        # self.tts_gender = self.user_info_available['speech']["tts_gender"] \
+        #     if self.user_info_available['speech']["tts_gender"] else self.default_gender
+        # self.two_gender = self.user_info_available['speech']["secondary_tts_gender"] \
+        #     if self.user_info_available['speech']["secondary_tts_gender"] else self.default_gender
         # self.voice = self.user_info_available['speech']["neon_voice"]
         self.alreadySpoke = False
 
@@ -502,8 +502,8 @@ class TranslationNGI(NeonSkill):
                           {'word': phrase_to_say.strip(),
                            'language': list(self.language_list.keys())[
                                list(self.language_list.values()).index(lang)].title().capitalize()})
-        if gender or self.tts_gender == "female":
-            tts_gender = gender if gender else self.default_gender
+        if gender:
+            tts_gender = gender
         else:
             tts_gender = self.default_gender
         translated = clean_quotes(self.translator.translate(phrase_to_say, lang, "en"))  # TODO: Internal lang DM
@@ -638,7 +638,7 @@ class TranslationNGI(NeonSkill):
         # TODO: This should be per-engine DM
         if stt:
             LOG.info("Getting Switch STT update")
-            stt_dict = self.configuration_available["sttSpokenOpts"]
+            stt_dict = self.configuration_available.get("sttSpokenOpts")
             try:
                 with open(join(abspath(dirname(__file__)), 'vocab/en-us/stt_language.voc'),
                           'w+') as stt_language:
