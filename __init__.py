@@ -745,7 +745,11 @@ class TranslationNGI(NeonSkill):
                 self.user_config.update_yaml_file("speech", "secondary_tts_gender", "", True, False)
                 self.user_config.update_yaml_file("speech", "secondary_neon_voice", "", False, True)
                 # LOG.debug("Overwrite second")
-            self.user_config.write_changes()
+            try:
+                self.user_config.write_changes()
+            except Exception as e:
+                LOG.error(e)
+                self.user_config.update_yaml_file(final=True)
             # self.bus.emit(Message('check.yml.updates',
             #                       {"modified": ["ngi_user_info"]}, {"origin": "translation.neon"}))
 
