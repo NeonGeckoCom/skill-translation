@@ -430,7 +430,7 @@ class TranslationNGI(NeonSkill):
                 self.speak_dialog("SwitchLanguageDialectOptions", {"language": options_language.capitalize()},
                                   True, private=True)
             self.enable_intent("LangMenu")
-            self.request_check_timeout(30, "LangMenu")
+            self.request_check_timeout(self.default_intent_timeout, "LangMenu")
 
         # Standard switch language dialog
         else:
@@ -593,10 +593,10 @@ class TranslationNGI(NeonSkill):
             return primary_pair, ""
 
     @intent_handler(IntentBuilder("LangMenu").optionally("Neon").require("ShowLanguageMenu"))
-    def lang_menu(self):
+    def lang_menu(self, message):  # TODO: Handle in converse DM
         self.disable_intent("LangMenu")
         self.speak_dialog("LanguageMenu", private=True)
-        self.create_signal("TK_active")
+        # self.create_signal("TK_active")
         self.multiple_options()
 
     @intent_handler(IntentBuilder("I_prefer").optionally("Neon").
@@ -754,11 +754,16 @@ class TranslationNGI(NeonSkill):
             #                       {"modified": ["ngi_user_info"]}, {"origin": "translation.neon"}))
 
     def multiple_options(self):
+        def populate_method(m=None):
+            # self.check_for_signal("TK_active")
+            self.bus.emit(Message("mycroft.stop"))
+            self.choose_lang(selection_made=m)
+
         for i in list(self.options.keys()):
             self.speak(str(i).capitalize(), private=True)
 
         self.speak_dialog("AskPreferred", expect_response=True, private=True)
-        self.enable_intent("I_prefer")
+        self.enable_intent("I_prefer")  # TODO: Handle in converse DM
 
         # if not self.server:
         #     test = tkHelper.CreateTable()
@@ -770,11 +775,6 @@ class TranslationNGI(NeonSkill):
         #     self.check_for_signal("Button_Press")
         #     time.sleep(1)
         #     self.populate_method(param) if param else LOG.info("I prefer used")
-
-    def populate_method(self, m=None):
-        # self.check_for_signal("TK_active")
-        self.bus.emit(Message("mycroft.stop"))
-        self.choose_lang(selection_made=m)
 
     def stop(self):
         pass
