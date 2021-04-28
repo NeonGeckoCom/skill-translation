@@ -40,7 +40,7 @@ class TranslationNGI(NeonSkill):
         super(TranslationNGI, self).__init__(name="TranslationNGI")
         self.region = 'us-west-2'
         self.check_for_signal("TR_secondary_language_options")
-        self.voc_path = pathlib.Path(self.configuration_available["dirVars"]["skillsDir"]
+        self.voc_path = pathlib.Path(self.local_config["dirVars"]["skillsDir"]
                                      + "/translation.neon/vocab/en-us/language.voc")
         # self.temp_dir = self.configuration_available['dirVars']['tempDir']
         self.default_gender = "female"
@@ -638,7 +638,7 @@ class TranslationNGI(NeonSkill):
         # TODO: This should be per-engine DM
         if stt:
             LOG.info("Getting Switch STT update")
-            stt_dict = self.configuration_available.get("sttSpokenOpts")
+            stt_dict = self.local_config.get("sttSpokenOpts")
             try:
                 with open(join(abspath(dirname(__file__)), 'vocab/en-us/stt_language.voc'),
                           'w+') as stt_language:
