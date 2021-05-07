@@ -20,7 +20,7 @@
 
 import pathlib
 import pickle
-import time
+# import time
 import urllib.request
 
 from os.path import join, abspath, dirname
@@ -29,28 +29,28 @@ from bs4 import BeautifulSoup
 from neon_utils import web_utils
 from neon_utils.parse_utils import clean_quotes
 
-from NGI.utilities import tkHelper
-from mycroft.messagebus.message import Message
-from mycroft.skills.core import MycroftSkill, intent_handler
-from mycroft.util.log import LOG
+# from NGI.utilities import tkHelper
+from mycroft_bus_client import Message
+from mycroft.skills.core import intent_handler
+from neon_utils.skills.neon_skill import NeonSkill, LOG
 
 
-class TranslationNGI(MycroftSkill):
+class TranslationNGI(NeonSkill):
     def __init__(self):
         super(TranslationNGI, self).__init__(name="TranslationNGI")
         self.region = 'us-west-2'
         self.check_for_signal("TR_secondary_language_options")
-        self.voc_path = pathlib.Path(self.configuration_available["dirVars"]["skillsDir"]
+        self.voc_path = pathlib.Path(self.local_config["dirVars"]["skillsDir"]
                                      + "/translation.neon/vocab/en-us/language.voc")
         # self.temp_dir = self.configuration_available['dirVars']['tempDir']
         self.default_gender = "female"
         self.extra_default = {"english": "en-us", "portuguese": "pt-pt", "spanish": "es-mx",
                               "chinese": "zh-zh", 'french': "fr-fr", "welsh": "cy-gb"}
-        self.tts_language = self.user_info_available['speech']["tts_language"].lower()
-        self.tts_gender = self.user_info_available['speech']["tts_gender"] \
-            if self.user_info_available['speech']["tts_gender"] else self.default_gender
-        self.two_gender = self.user_info_available['speech']["secondary_tts_gender"] \
-            if self.user_info_available['speech']["secondary_tts_gender"] else self.default_gender
+        # self.tts_language = self.user_info_available['speech']["tts_language"].lower()
+        # self.tts_gender = self.user_info_available['speech']["tts_gender"] \
+        #     if self.user_info_available['speech']["tts_gender"] else self.default_gender
+        # self.two_gender = self.user_info_available['speech']["secondary_tts_gender"] \
+        #     if self.user_info_available['speech']["secondary_tts_gender"] else self.default_gender
         # self.voice = self.user_info_available['speech']["neon_voice"]
         self.alreadySpoke = False
 
@@ -412,46 +412,41 @@ class TranslationNGI(MycroftSkill):
                     LOG.error(f"{proposed} not found in languages!")
                     return
 
-        # Handle phrase translation request
-        # TODO: This is where translate is handled... Move to separate intent DM
-        if "translate" in utt:
-            self._translate_phrase(message, primary_language, primary_gender)
-        else:
-            LOG.debug(f"{first} | {second}")
-            self.switch_tts_voice(first, second, message, overwrite_second)
+        LOG.debug(f"{first} | {second}")
+        self.switch_tts_voice(first, second, message, overwrite_second)
 
-            # Language options are available
-            if options_available:
-                # two languages with options for one
-                if first and second:
-                    self.speak_dialog("SwitchPrimaryAndSecondary", {"primary_gender": primary_gender,
-                                                                    "primary_language": primary_language,
-                                                                    "second_gender": second_gender,
-                                                                    "second_language": second_language}, private=True)
-                    self.speak_dialog("TwoLanguagesDialectOptions", {"language": options_language.capitalize()},
-                                      True, private=True)
-                # one language with options
-                else:
-                    self.speak_dialog("SwitchLanguageDialectOptions", {"language": options_language.capitalize()},
-                                      True, private=True)
-                self.enable_intent("LangMenu")
-                self.request_check_timeout(30, "LangMenu")
-
-            # Standard switch language dialog
+        # Language options are available
+        if options_available:
+            # two languages with options for one
+            if first and second:
+                self.speak_dialog("SwitchPrimaryAndSecondary", {"primary_gender": primary_gender,
+                                                                "primary_language": primary_language,
+                                                                "second_gender": second_gender,
+                                                                "second_language": second_language}, private=True)
+                self.speak_dialog("TwoLanguagesDialectOptions", {"language": options_language.capitalize()},
+                                  True, private=True)
+            # one language with options
             else:
-                if first and second:
-                    self.speak_dialog("SwitchPrimaryAndSecondary", {"primary_gender": primary_gender,
-                                                                    "primary_language": primary_language,
-                                                                    "second_gender": second_gender,
-                                                                    "second_language": second_language}, private=True)
-                elif first:
-                    self.speak_dialog("SwitchLanguage", {"language": primary_language,
-                                                         "gender": primary_gender,
-                                                         "primary": "primary"}, private=True)
-                elif second:
-                    self.speak_dialog("SwitchLanguage", {"language": second_language,
-                                                         "gender": second_gender,
-                                                         "primary": "secondary"}, private=True)
+                self.speak_dialog("SwitchLanguageDialectOptions", {"language": options_language.capitalize()},
+                                  True, private=True)
+            self.enable_intent("LangMenu")
+            self.request_check_timeout(self.default_intent_timeout, "LangMenu")
+
+        # Standard switch language dialog
+        else:
+            if first and second:
+                self.speak_dialog("SwitchPrimaryAndSecondary", {"primary_gender": primary_gender,
+                                                                "primary_language": primary_language,
+                                                                "second_gender": second_gender,
+                                                                "second_language": second_language}, private=True)
+            elif first:
+                self.speak_dialog("SwitchLanguage", {"language": primary_language,
+                                                     "gender": primary_gender,
+                                                     "primary": "primary"}, private=True)
+            elif second:
+                self.speak_dialog("SwitchLanguage", {"language": second_language,
+                                                     "gender": second_gender,
+                                                     "primary": "secondary"}, private=True)
 
     @intent_handler(IntentBuilder("SetPreferredLanguage").optionally("Neon").require("PreferredLanguage")
                     .require("language").build())
@@ -507,8 +502,8 @@ class TranslationNGI(MycroftSkill):
                           {'word': phrase_to_say.strip(),
                            'language': list(self.language_list.keys())[
                                list(self.language_list.values()).index(lang)].title().capitalize()})
-        if gender or self.tts_gender == "female":
-            tts_gender = gender if gender else self.default_gender
+        if gender:
+            tts_gender = gender
         else:
             tts_gender = self.default_gender
         translated = clean_quotes(self.translator.translate(phrase_to_say, lang, "en"))  # TODO: Internal lang DM
@@ -598,10 +593,10 @@ class TranslationNGI(MycroftSkill):
             return primary_pair, ""
 
     @intent_handler(IntentBuilder("LangMenu").optionally("Neon").require("ShowLanguageMenu"))
-    def lang_menu(self):
+    def lang_menu(self, message):  # TODO: Handle in converse DM
         self.disable_intent("LangMenu")
         self.speak_dialog("LanguageMenu", private=True)
-        self.create_signal("TK_active")
+        # self.create_signal("TK_active")
         self.multiple_options()
 
     @intent_handler(IntentBuilder("I_prefer").optionally("Neon").
@@ -643,7 +638,7 @@ class TranslationNGI(MycroftSkill):
         # TODO: This should be per-engine DM
         if stt:
             LOG.info("Getting Switch STT update")
-            stt_dict = self.configuration_available["sttSpokenOpts"]
+            stt_dict = self.local_config.get("sttSpokenOpts")
             try:
                 with open(join(abspath(dirname(__file__)), 'vocab/en-us/stt_language.voc'),
                           'w+') as stt_language:
@@ -728,7 +723,6 @@ class TranslationNGI(MycroftSkill):
             message.context["nick_profiles"][nick]["speech"]["secondary_tts_language"] =\
                 user_dict['secondary_tts_language']
             message.context["nick_profiles"][nick]["speech"]["secondary_tts_gender"] = user_dict['secondary_tts_gender']
-            # message.context["nick_profiles"][nick]["speech"]["secondary_neon_voice"] = user_dict['secondary_neon_voice']
 
             # Emit updated profile to server
             LOG.debug(user_dict)
@@ -751,33 +745,36 @@ class TranslationNGI(MycroftSkill):
                 self.user_config.update_yaml_file("speech", "secondary_tts_gender", "", True, False)
                 self.user_config.update_yaml_file("speech", "secondary_neon_voice", "", False, True)
                 # LOG.debug("Overwrite second")
-            else:
+            try:
+                self.user_config.write_changes()
+            except Exception as e:
+                LOG.error(e)
                 self.user_config.update_yaml_file(final=True)
-            self.bus.emit(Message('check.yml.updates',
-                                  {"modified": ["ngi_user_info"]}, {"origin": "translation.neon"}))
+            # self.bus.emit(Message('check.yml.updates',
+            #                       {"modified": ["ngi_user_info"]}, {"origin": "translation.neon"}))
 
     def multiple_options(self):
+        def populate_method(m=None):
+            # self.check_for_signal("TK_active")
+            self.bus.emit(Message("mycroft.stop"))
+            self.choose_lang(selection_made=m)
+
         for i in list(self.options.keys()):
             self.speak(str(i).capitalize(), private=True)
 
         self.speak_dialog("AskPreferred", expect_response=True, private=True)
-        self.enable_intent("I_prefer")
+        self.enable_intent("I_prefer")  # TODO: Handle in converse DM
 
-        if not self.server:
-            test = tkHelper.CreateTable()
-            test.add_buttons(list(self.options.keys()))
-
-            param = test.start_table()
-            LOG.info(param)
-            self.check_for_signal("TK_active")
-            self.check_for_signal("Button_Press")
-            time.sleep(1)
-            self.populate_method(param) if param else LOG.info("I prefer used")
-
-    def populate_method(self, m=None):
-        self.check_for_signal("TK_active")
-        self.bus.emit(Message("mycroft.stop"))
-        self.choose_lang(selection_made=m)
+        # if not self.server:
+        #     test = tkHelper.CreateTable()
+        #     test.add_buttons(list(self.options.keys()))
+        #
+        #     param = test.start_table()
+        #     LOG.info(param)
+        #     self.check_for_signal("TK_active")
+        #     self.check_for_signal("Button_Press")
+        #     time.sleep(1)
+        #     self.populate_method(param) if param else LOG.info("I prefer used")
 
     def stop(self):
         pass
@@ -790,7 +787,7 @@ class TranslationNGI(MycroftSkill):
         @param do_emit: (Boolean) server use, emit updated profile to server (False if more changes expected)
         @return: None
         """
-        import os
+        # import os
         LOG.info(setting)
         stt_language, stt_region = setting.split('-', 1)
         if self.server:
@@ -812,8 +809,8 @@ class TranslationNGI(MycroftSkill):
         else:
             self.user_config.update_yaml_file("speech", "stt_language", stt_language, True)
             self.user_config.update_yaml_file("speech", "stt_region", stt_region, final=True)
-            os.system("sudo -H -u " + self.configuration_available['devVars']['installUser'] + ' ' +
-                      self.configuration_available['dirVars']['coreDir'] + "/start_neon.sh voice")
+            # os.system("sudo -H -u " + self.configuration_available['devVars']['installUser'] + ' ' +
+            #           self.configuration_available['dirVars']['coreDir'] + "/start_neon.sh voice")
 
 
 def create_skill():
