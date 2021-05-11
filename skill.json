@@ -41,6 +41,5 @@
     ],
     "skillname": "Translation",
     "authorname": "Neon",
-    "foldername": "translation.neon",
-    "download_url": "https://api.github.com/repos/NeonGeckoCom/translation.neon/zipball/master"
+    "foldername": "translation.neon"
 }
