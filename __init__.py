@@ -508,7 +508,10 @@ class TranslationNGI(NeonSkill):
         translated = clean_quotes(self.translator.translate(phrase_to_say, lang, "en"))  # TODO: Internal lang DM
         LOG.info(translated)
         if self.gui_enabled:
-            self.gui.show_text(translated, phrase_to_say)
+            self.gui["title"] = phrase_to_say
+            self.gui["text"] = translated
+            self.gui.show_page("Translation.qml")
+            # self.gui.show_text(translated, phrase_to_say)
             self.clear_gui_timeout()
         self.speak(translated, speaker={"name": "Neon",
                                         "language": lang,
