@@ -18,12 +18,11 @@
 # US Patents 2008-2021: US7424516, US20140161250, US20140177813, US8638908, US8068604, US8553852, US10530923, US10530924
 # China Patent: CN102017585  -  Europe Patent: EU2156652  -  Patents Pending
 
-import pathlib
 import pickle
 # import time
 import urllib.request
 
-from os.path import join, abspath, dirname
+from os.path import join, abspath, dirname, isfile
 from adapt.intent import IntentBuilder
 from bs4 import BeautifulSoup
 from neon_utils import web_utils
@@ -40,8 +39,8 @@ class TranslationNGI(NeonSkill):
         super(TranslationNGI, self).__init__(name="TranslationNGI")
         self.region = 'us-west-2'
         self.check_for_signal("TR_secondary_language_options")
-        self.voc_path = pathlib.Path(self.local_config["dirVars"]["skillsDir"]
-                                     + "/translation.neon/vocab/en-us/language.voc")
+
+        self.voc_path = join(dirname(__file__), "vocab", "en-us", "language.voc")
         # self.temp_dir = self.configuration_available['dirVars']['tempDir']
         self.default_gender = "female"
         self.extra_default = {"english": "en-us", "portuguese": "pt-pt", "spanish": "es-mx",
@@ -54,8 +53,8 @@ class TranslationNGI(NeonSkill):
         # self.voice = self.user_info_available['speech']["neon_voice"]
         self.alreadySpoke = False
 
-        if self.check_for_signal("TTS_update") or not self.voc_path.exists() or not \
-                pathlib.Path(join(abspath(dirname(__file__)), 'language_from_polly.txt')).exists():
+        if self.check_for_signal("TTS_update") or not isfile(self.voc_path) or not \
+                isfile(join(abspath(dirname(__file__)), 'language_from_polly.txt')):
             self.get_entity()
             # LOG.info("\n \n getting voc or init \n \n ")
         else:
@@ -65,9 +64,9 @@ class TranslationNGI(NeonSkill):
                 # LOG.info(self.ll)
                 # LOG.info(type(self.ll))
 
-        if self.check_for_signal("STT_update") or not pathlib.Path(join(abspath(dirname(__file__)),
-                                                                   "vocab/en-us/stt_language.voc")).exists() \
-                or not pathlib.Path(join(abspath(dirname(__file__)), 'language_from_stt.txt')).exists():
+        if self.check_for_signal("STT_update") or not isfile(join(abspath(dirname(__file__)),
+                                                                   "vocab", "en-us", "stt_language.voc")) \
+                or not isfile(join(abspath(dirname(__file__)), 'language_from_stt.txt')):
             self.stt_dict = {}
             self.get_entity(stt=True)
             LOG.info("\n \n getting voc or init \n \n ")
@@ -328,7 +327,7 @@ class TranslationNGI(NeonSkill):
             overwrite_second = False
 
         self.create_signal("TTS_voice_switch")  # TODO: Depreciated as of Core 2103 DM
-        utt = str(message.data.get("utterance"))
+        # utt = str(message.data.get("utterance"))
         LOG.debug(f"{first} | {second}")  # ['japanese', 'female'] | ['english', 'female']
 
         # Get languages and genders for primary/secondary languages
@@ -509,7 +508,10 @@ class TranslationNGI(NeonSkill):
         translated = clean_quotes(self.translator.translate(phrase_to_say, lang, "en"))  # TODO: Internal lang DM
         LOG.info(translated)
         if self.gui_enabled:
-            self.gui.show_text(translated, phrase_to_say)
+            self.gui["title"] = phrase_to_say
+            self.gui["text"] = translated
+            self.gui.show_page("Translation.qml")
+            # self.gui.show_text(translated, phrase_to_say)
             self.clear_gui_timeout()
         self.speak(translated, speaker={"name": "Neon",
                                         "language": lang,
