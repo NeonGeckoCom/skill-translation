@@ -505,7 +505,10 @@ class TranslationNGI(NeonSkill):
             tts_gender = gender
         else:
             tts_gender = self.default_gender
-        translated = clean_quotes(self.translator.translate(phrase_to_say, lang, "en"))  # TODO: Internal lang DM
+        translated = self.translator.translate(phrase_to_say, lang, self.translator.internal_language.split('-')[0])
+        if not translated:
+            raise Exception("Translator returned null!")
+        translated = clean_quotes(translated)
         LOG.info(translated)
         if self.gui_enabled:
             self.gui["title"] = phrase_to_say
