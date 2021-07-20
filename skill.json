@@ -16,7 +16,7 @@
     "systemDeps": false,
     "requirements": {
         "python": [
-            "git+https://github.com/neongeckocom/neon-skill-utils"
+            "neon-utils>=0.5.7"
         ],
         "system": {},
         "skill": []
