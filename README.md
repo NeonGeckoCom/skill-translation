@@ -2,7 +2,7 @@
 
 ## Summary
 
-This skill provides translation and switching TTS/STT languages functionality.
+Translates phrases between languages. Also handles switching TTS/STT languages under Neon Core.
 
 ## Requirements
 
@@ -353,6 +353,6 @@ You can also ask to hear back your current settings by saying:
 Use the [link](https://neongecko.com/ContactUs) or [submit an issue on GitHub](https://help.github.com/en/articles/creating-an-issue)
 
 ## Credits
-
-reginaneon [neongeckocom](https://neongecko.com/)
-
+[NeonDaniel](https://github.com/NeonDaniel)
+[NeonGeckoCom](https://github.com/NeonGeckoCom)
+[reginaneon](https://github.com/reginaneon)
