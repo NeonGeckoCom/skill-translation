@@ -1,1 +1,0 @@
-(set |change |make |switch |)(my |).*\bsecondary language to (?P<second_language> *.+)
