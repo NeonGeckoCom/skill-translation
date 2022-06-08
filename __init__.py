@@ -46,11 +46,6 @@ class TranslationNGI(NeonSkill):
         LOG.info(f"language={language}|phrase={phrase}")
         load_language(self.lang)
         short_code = extract_langcode(language)[0]
-        # code = get_full_lang_code(short_code)
-        # if code.split('-')[0] != short_code:
-        #     LOG.warning(f"Got {code} from {short_code}. No valid code")
-        #     # TODO: Speak warning
-        #     return
         translated = self.translator.translate(phrase, short_code, self.lang)
         gender = "male" if self.voc_match(language, "male") else \
             "female" if self.voc_match(language, "female") else \
@@ -62,7 +57,8 @@ class TranslationNGI(NeonSkill):
                                                  "lang": spoken_lang})
         self.speak(translated, speaker={"language": short_code,
                                         "name": "Neon",
-                                        "gender": gender})
+                                        "gender": gender,
+                                        "override_user": True})
 
     def stop(self):
         pass
