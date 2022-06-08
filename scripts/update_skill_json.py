@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # NEON AI (TM) SOFTWARE, Software Development Kit & Application Framework
 # All trademark and other rights reserved by their respective owners
 # Copyright 2008-2022 Neongecko.com Inc.
@@ -27,42 +26,32 @@
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE,  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from neon_utils.skills.neon_skill import NeonSkill, LOG
-from lingua_franca import load_language
-from lingua_franca.parse import extract_langcode, get_full_lang_code
-from lingua_franca.format import pronounce_lang
+import json
+from os.path import dirname, join
+from pprint import pprint
+from neon_utils.packaging_utils import build_skill_spec
 
-from mycroft.skills.core import intent_handler
-
-
-class TranslationNGI(NeonSkill):
-    def __init__(self):
-        super(TranslationNGI, self).__init__(name="TranslationNGI")
-
-    @intent_handler("translate_phrase.intent")
-    def handle_translate_phrase(self, message):
-        phrase = message.data.get("phrase")
-        language = message.data.get("language")
-        LOG.info(f"language={language}|phrase={phrase}")
-        load_language(self.lang)
-        short_code = extract_langcode(language)[0]
-        translated = self.translator.translate(phrase, short_code, self.lang)
-        gender = "male" if self.voc_match(language, "male") else \
-            "female" if self.voc_match(language, "female") else \
-            "female"  # TODO: Get user's preference
-        LOG.info(f"translated={translated}")
-        # TODO: Validate translation
-        spoken_lang = pronounce_lang(short_code)
-        self.speak_dialog("phrase_in_language", {"phrase": phrase,
-                                                 "lang": spoken_lang})
-        self.speak(translated, speaker={"language": short_code,
-                                        "name": "Neon",
-                                        "gender": gender,
-                                        "override_user": True})
-
-    def stop(self):
-        pass
+skill_dir = dirname(dirname(__file__))
 
 
-def create_skill():
-    return TranslationNGI()
+def get_skill_json():
+    print(f"skill_dir={skill_dir}")
+    skill_json = join(skill_dir, "skill.json")
+    skill_spec = build_skill_spec(skill_dir)
+    pprint(skill_spec)
+    try:
+        with open(skill_json) as f:
+            current = json.load(f)
+    except Exception as e:
+        print(e)
+        current = None
+    if current != skill_spec:
+        print("Skill Updated. Writing skill.json")
+        with open(skill_json, 'w+') as f:
+            json.dump(skill_spec, f, indent=4)
+    else:
+        print("No changes to skill.json")
+
+
+if __name__ == "__main__":
+    get_skill_json()
