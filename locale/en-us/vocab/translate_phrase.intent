@@ -1,1 +1,2 @@
-(translate|how do you say) {phrase} (to|in) {language}
+how do you say {phrase} in {language}
+translate {phrase} (to|into) {language}

@@ -1,9 +1,0 @@
-{
-  "utterance": "neon talk to me in french",
-  "intent_type": "TalkToMeKeyword_intent",
-  "intent": {
-    "Neon": "neon",
-    "TalkToMeKeyword": "talk to me in",
-    "language": "french"
-  }
-}
