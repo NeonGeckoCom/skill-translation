@@ -28,6 +28,7 @@
 # SOFTWARE,  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from neon_utils.skills.neon_skill import NeonSkill, LOG
+from neon_utils.user_utils import get_user_prefs
 from lingua_franca import load_language
 from lingua_franca.parse import extract_langcode
 from lingua_franca.format import pronounce_lang
@@ -37,7 +38,7 @@ from mycroft.skills.core import intent_handler
 
 class Translation(NeonSkill):
     def __init__(self):
-        super(Translation, self).__init__(name="TranslationNGI")
+        super(Translation, self).__init__(name="Translation")
 
     @intent_handler("translate_phrase.intent")
     def handle_translate_phrase(self, message):
@@ -45,20 +46,32 @@ class Translation(NeonSkill):
         language = message.data.get("language")
         LOG.info(f"language={language}|phrase={phrase}")
         load_language(self.lang)
-        short_code = extract_langcode(language)[0]
-        translated = self.translator.translate(phrase, short_code, self.lang)
-        gender = "male" if self.voc_match(language, "male") else \
-            "female" if self.voc_match(language, "female") else \
-            "female"  # TODO: Get user's preference
-        LOG.info(f"translated={translated}")
-        # TODO: Validate translation
-        spoken_lang = pronounce_lang(short_code)
-        self.speak_dialog("phrase_in_language", {"phrase": phrase,
-                                                 "lang": spoken_lang})
-        self.speak(translated, speaker={"language": short_code,
-                                        "name": "Neon",
-                                        "gender": gender,
-                                        "override_user": True})
+        if language:
+            short_code = extract_langcode(language)[0]
+        else:
+            short_code = None
+        if phrase and short_code:
+            try:
+                translated = self.translator.translate(phrase, short_code, self.lang)
+                gender = "male" if self.voc_match(language, "male") else \
+                    "female" if self.voc_match(language, "female") else \
+                    get_user_prefs(message)['speech'].get("tts_gender") or \
+                    "female"
+                LOG.info(f"translated={translated}")
+                spoken_lang = pronounce_lang(short_code)
+                self.speak_dialog("phrase_in_language", {"phrase": phrase,
+                                                         "lang": spoken_lang})
+                self.speak(translated, speaker={"language": short_code,
+                                                "name": "Neon",
+                                                "gender": gender,
+                                                "override_user": True})
+            except Exception as e:
+                LOG.error(e)
+                if "not supported" in repr(e):
+                    lang = pronounce_lang(short_code)
+                    self.speak_dialog("language_not_supported", {"lang": lang})
+        else:
+            LOG.warning("Failed to extract a valid language")
 
     def stop(self):
         pass

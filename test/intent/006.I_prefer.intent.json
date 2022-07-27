@@ -1,9 +1,0 @@
-{
-  "utterance": "neon i prefer french",
-  "intent_type": "I_prefer",
-  "intent": {
-    "Neon": "neon",
-    "I_prefer": "i prefer",
-    "language": "french"
-  }
-}

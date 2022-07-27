@@ -1,9 +1,0 @@
-{
-  "utterance": "neon start listening for french",
-  "intent_type": "TalkToYouKeyword_intent",
-  "intent": {
-    "Neon": "neon",
-    "TalkToYouKeyword": "start listening for",
-    "language": "french"
-  }
-}
