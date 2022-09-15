@@ -20,6 +20,7 @@
 import shutil
 import unittest
 import pytest
+import mock
 
 from os import mkdir
 from os.path import dirname, join, exists
@@ -31,9 +32,10 @@ from ovos_utils.messagebus import FakeBus
 class TestSkill(unittest.TestCase):
 
     @classmethod
-    def setUpClass(cls) -> None:
+    @mock.patch('neon_utils.language_utils.get_supported_output_langs')
+    def setUpClass(cls, get_langs) -> None:
+        get_langs.return_value = {'en', 'es'}
         from mycroft.skills.skill_loader import SkillLoader
-
         bus = FakeBus()
         bus.run_in_thread()
         skill_loader = SkillLoader(bus, dirname(dirname(__file__)))
@@ -58,10 +60,30 @@ class TestSkill(unittest.TestCase):
         self.skill.speak_dialog.reset_mock()
 
     def test_00_skill_init(self):
+        real_translator = self.skill._translator_langs
+        real_tts = self.skill._tts_langs
+
         # Test any parameters expected to be set in init or initialize methods
         from neon_utils.skills import NeonSkill
-
         self.assertIsInstance(self.skill, NeonSkill)
+
+        self.skill._translator_langs = set()
+        self.skill._tts_langs = set()
+
+        # No translator or tts
+        self.assertIsNone(self.skill.supported_languages)
+
+        # tts, no translator
+        self.skill._tts_langs = {'en'}
+        self.assertIsNone(self.skill.supported_languages)
+
+        # tts and translator
+        self.skill._tts_langs = {'en', 'es'}
+        self.skill._translator_langs = {'en', 'fr'}
+        self.assertEqual(self.skill.supported_languages, {'en'})
+
+        self.skill._translator_langs = real_translator
+        self.skill._tts_langs = real_tts
 
     def test_handle_translate_phrase(self):
         valid_phrase = "hello"
@@ -98,9 +120,28 @@ class TestSkill(unittest.TestCase):
         self.skill.speak_dialog.assert_called_once_with(
             "phrase_in_language", {"phrase": "hello", "lang": "Spanish"})
         self.skill.speak.assert_called_once_with(
-            "Hola", speaker={"language": "es", "name": "Neon",
+            "hola", speaker={"language": "es", "name": "Neon",
                              "gender": "female", "override_user": True}
         )
+
+        # Translation unsupported language
+        real_translator = self.skill._translator_langs
+        real_tts = self.skill._tts_langs
+        self.skill._translator_langs = {'en', 'es'}
+        self.skill._tts_langs = {'en', 'es', 'uk'}
+        self.skill.handle_translate_phrase(Message(
+            "test", {"phrase": valid_phrase, "language": 'ukrainian',
+                     "lang": "en-us"}))
+        self.skill.speak_dialog.assert_called_with("language_not_supported",
+                                                   {'lang': "Ukrainian"})
+        # TTS Unsupported language
+        self.skill._translator_langs = {'en', 'es', 'fr'}
+        self.skill._tts_langs = {'en', 'es', 'uk'}
+        self.skill.handle_translate_phrase(Message(
+            "test", {"phrase": valid_phrase, "language": 'french',
+                     "lang": "en-us"}))
+        self.skill.speak_dialog.assert_called_with("language_not_supported",
+                                                   {'lang': "French"})
 
         # Unsupported language
         self.skill.handle_translate_phrase(Message(
@@ -109,6 +150,9 @@ class TestSkill(unittest.TestCase):
         self.skill.speak_dialog.assert_called_with("language_not_supported",
                                                    {"lang": "Laothian"})
         # TODO: Test gender determination
+
+        self.skill._translator_langs = real_translator
+        self.skill._tts_langs = real_tts
 
 
 if __name__ == '__main__':
