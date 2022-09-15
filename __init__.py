@@ -26,9 +26,11 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE,  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+from typing import Optional
 
 from neon_utils.skills.neon_skill import NeonSkill, LOG
 from neon_utils.user_utils import get_user_prefs
+from neon_utils.language_utils import get_supported_output_langs
 from lingua_franca import load_language
 from lingua_franca.parse import extract_langcode
 from lingua_franca.format import pronounce_lang
@@ -39,6 +41,27 @@ from mycroft.skills.core import intent_handler
 class Translation(NeonSkill):
     def __init__(self):
         super(Translation, self).__init__(name="Translation")
+        self._tts_langs = None
+        self._translator_langs = None
+
+    @property
+    def supported_languages(self) -> Optional[set]:
+        """
+        Get the set of supported languages (None if not specified)
+        """
+        try:
+            self._tts_langs = self._tts_langs or \
+                get_supported_output_langs(False)
+            self._translator_langs = self._translator_langs or \
+                self.translator.available_languages
+        except AttributeError:
+            pass
+        if not (self._tts_langs and self._translator_langs):
+            LOG.warning("TTS and Translator langs not specified. "
+                        "Assuming all supported")
+            return None
+        return set([lang for lang in self._tts_langs if lang in
+                    self._translator_langs])
 
     @intent_handler("translate_phrase.intent")
     def handle_translate_phrase(self, message):
@@ -51,6 +74,10 @@ class Translation(NeonSkill):
         else:
             short_code = None
         if phrase and short_code:
+            if self.supported_languages and short_code not in self.supported_languages:
+                self.speak_dialog("language_not_supported",
+                                  {"lang": pronounce_lang(short_code)})
+                return
             try:
                 translated = self.translator.translate(phrase, short_code, self.lang)
                 gender = "male" if self.voc_match(language, "male") else \

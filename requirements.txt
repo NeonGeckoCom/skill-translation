@@ -1,2 +1,2 @@
-neon-utils>=0.6,<2.0.0
+neon-utils[network]~=1.0,>=1.0.3a5
 neon-lang-plugin-libretranslate~=0.1
