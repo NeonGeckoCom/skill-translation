@@ -1,8 +1,8 @@
-# <img src='https://0000.us/klatchat/app/files/neon_images/icons/neon_skill.png' card_color="#FF8600" width="50" style="vertical-align:bottom">Translation
+# <img src='./logo.svg' card_color="#FF8600" width="50" style="vertical-align:bottom" style="vertical-align:bottom">Translation
 
 ## Summary
 
-Translates phrases between languages.
+Translate phrases between languages.
 
 ## Description
 
