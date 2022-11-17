@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # NEON AI (TM) SOFTWARE, Software Development Kit & Application Framework
 # All trademark and other rights reserved by their respective owners
 # Copyright 2008-2022 Neongecko.com Inc.
@@ -31,7 +30,8 @@ from typing import Optional
 from neon_utils.skills.neon_skill import NeonSkill, LOG
 from neon_utils.user_utils import get_user_prefs
 from neon_utils.language_utils import get_supported_output_langs
-from lingua_franca import load_language
+from lingua_franca import load_language, get_full_lang_code
+from lingua_franca.internal import UnsupportedLanguageError
 from lingua_franca.parse import extract_langcode
 from lingua_franca.format import pronounce_lang
 
@@ -69,14 +69,16 @@ class Translation(NeonSkill):
         language = message.data.get("language")
         LOG.info(f"language={language}|phrase={phrase}")
         load_language(self.lang)
-        if language:
-            short_code = extract_langcode(language)[0]
-        else:
+        try:
+            short_code, language = self._get_lang_code_and_name(language)
+        except UnsupportedLanguageError as e:
+            LOG.warning(e)
             short_code = None
         if phrase and short_code:
-            if self.supported_languages and short_code not in self.supported_languages:
+            if self.supported_languages and \
+                    short_code not in self.supported_languages:
                 self.speak_dialog("language_not_supported",
-                                  {"lang": pronounce_lang(short_code)})
+                                  {"lang": language})
                 return
             try:
                 translated = self.translator.translate(phrase, short_code, self.lang)
@@ -99,6 +101,36 @@ class Translation(NeonSkill):
                     self.speak_dialog("language_not_supported", {"lang": lang})
         else:
             LOG.warning("Failed to extract a valid language")
+
+    def _get_lang_code_and_name(self, request: str) -> (str, str):
+        """
+        Extract the lang code and pronounceable name from a requested language
+        :param request: user requested language
+        :returns: lang code and pronounceable language name if found, else None
+        """
+        load_language(self.lang)
+
+        code = None
+        # Manually specified languages take priority
+        request_overrides = self.translate_namedvalues("languages.value")
+        for lang, c in request_overrides.items():
+            if lang in request.lower().split():
+                code = c
+                break
+        if not code:
+            # Ask LF to determine the code
+            short_code = extract_langcode(request)[0]
+            code = get_full_lang_code(short_code)
+            if code.split('-')[0] != short_code:
+                LOG.warning(f"Got {code} from {short_code}. No valid code")
+                code = None
+
+        if not code:
+            # Request is not a language, raise an exception
+            raise UnsupportedLanguageError(f"No language found in {request}")
+        code = code.split('-')[0]
+        spoken_lang = pronounce_lang(code)
+        return code, spoken_lang
 
     def stop(self):
         pass
