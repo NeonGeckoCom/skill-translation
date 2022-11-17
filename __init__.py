@@ -25,9 +25,10 @@
 # LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE,  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-from typing import Optional
 
-from neon_utils.skills.neon_skill import NeonSkill, LOG
+from typing import Optional
+from ovos_utils.log import LOG
+from neon_utils.skills.neon_skill import NeonSkill
 from neon_utils.user_utils import get_user_prefs
 from neon_utils.language_utils import get_supported_output_langs
 from lingua_franca import load_language, get_full_lang_code
