@@ -154,6 +154,90 @@ class TestSkill(unittest.TestCase):
         self.skill._translator_langs = real_translator
         self.skill._tts_langs = real_tts
 
+    def test_get_lang_name_and_code(self):
+        from lingua_franca.internal import UnsupportedLanguageError
+        # Check all the Coqui TTS Supported Languages
+        self.assertEqual(("en", "English"),
+                         self.skill._get_lang_code_and_name("english"))
+        self.assertEqual(("es", "Spanish"),
+                         self.skill._get_lang_code_and_name("spanish"))
+        self.assertEqual(("fr", "French"),
+                         self.skill._get_lang_code_and_name("french"))
+        self.assertEqual(("de", "German"),
+                         self.skill._get_lang_code_and_name("german"))
+        self.assertEqual(("it", "Italian"),
+                         self.skill._get_lang_code_and_name("italian"))
+        self.assertEqual(("pl", "Polish"),
+                         self.skill._get_lang_code_and_name("polish"))
+        self.assertEqual(("uk", "Ukrainian"),
+                         self.skill._get_lang_code_and_name("ukrainian"))
+        self.assertEqual(("ro", "Romanian"),
+                         self.skill._get_lang_code_and_name("romanian"))
+        self.assertEqual(("hu", "Hungarian"),
+                         self.skill._get_lang_code_and_name("hungarian"))
+        self.assertEqual(("el", "Greek"),
+                         self.skill._get_lang_code_and_name("greek"))
+        self.assertEqual(("sv", "Swedish"),
+                         self.skill._get_lang_code_and_name("swedish"))
+        self.assertEqual(("bg", "Bulgarian"),
+                         self.skill._get_lang_code_and_name("bulgarian"))
+        self.assertEqual(("nl", "Dutch"),
+                         self.skill._get_lang_code_and_name("dutch"))
+        self.assertEqual(("fi", "Finnish"),
+                         self.skill._get_lang_code_and_name("finnish"))
+        self.assertEqual(("sl", "Slovenian"),
+                         self.skill._get_lang_code_and_name("slovenian"))
+        self.assertEqual(("lv", "Latvian"),
+                         self.skill._get_lang_code_and_name("latvian"))
+        self.assertEqual(("et", "Estonian"),
+                         self.skill._get_lang_code_and_name("estonian"))
+        self.assertEqual(("ga", "Irish"),
+                         self.skill._get_lang_code_and_name("irish"))
+
+        # Check LibreTranslate supported languages
+        self.assertEqual(("ar", "Arabic"),
+                         self.skill._get_lang_code_and_name("arabic"))
+        self.assertEqual(("az", "Azerbaijani"),
+                         self.skill._get_lang_code_and_name("azerbaijani"))
+        self.assertEqual(("zh", "Chinese"),
+                         self.skill._get_lang_code_and_name("chinese"))
+        self.assertEqual(("cs", "Czech"),
+                         self.skill._get_lang_code_and_name("czech"))
+        self.assertEqual(("da", "Danish"),
+                         self.skill._get_lang_code_and_name("danish"))
+        # self.assertEqual(("eo", "Esperanto"),
+        #                  self.skill._get_lang_code_and_name("esperanto"))
+        # self.assertEqual(("he", "Hebrew"),
+        #                  self.skill._get_lang_code_and_name("hebrew"))
+        self.assertEqual(("hi", "Hindi"),
+                         self.skill._get_lang_code_and_name("hindi"))
+        self.assertEqual(("id", "Indonesian"),
+                         self.skill._get_lang_code_and_name("indonesian"))
+        self.assertEqual(("ja", "Japanese"),
+                         self.skill._get_lang_code_and_name("japanese"))
+        self.assertEqual(("ko", "Korean"),
+                         self.skill._get_lang_code_and_name("korean"))
+        self.assertEqual(("fa", "Persian"),
+                         self.skill._get_lang_code_and_name("persian"))
+        self.assertEqual(("pt", "Portuguese"),
+                         self.skill._get_lang_code_and_name("portuguese"))
+        self.assertEqual(("ru", "Russian"),
+                         self.skill._get_lang_code_and_name("russian"))
+        self.assertEqual(("sk", "Slovak"),
+                         self.skill._get_lang_code_and_name("slovak"))
+        self.assertEqual(("tr", "Turkish"),
+                         self.skill._get_lang_code_and_name("turkish"))
+        # Check manually specified alternative language requests
+        self.assertEqual(("ga", "Irish"),
+                         self.skill._get_lang_code_and_name("gaelic"))
+        self.assertEqual(("en", "English"),
+                         self.skill._get_lang_code_and_name(
+                             "australian english"))
+        self.assertEqual(("fa", "Persian"),
+                         self.skill._get_lang_code_and_name("farsi"))
+        with self.assertRaises(UnsupportedLanguageError):
+            self.skill._get_lang_code_and_name("nothing")
+
 
 if __name__ == '__main__':
     pytest.main()

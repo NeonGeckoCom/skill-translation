@@ -9,7 +9,8 @@ Translates phrases between languages.
 Use this skill to translate individual words or sentences.
 
 ## Examples
-- translate hello to Polish
+- Translate hello to Polish.
+- Translate thank you to Ukrainian.
 
 ## Contact Support
 
