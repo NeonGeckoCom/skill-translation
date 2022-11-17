@@ -67,8 +67,8 @@ class TestSkill(unittest.TestCase):
         from neon_utils.skills import NeonSkill
         self.assertIsInstance(self.skill, NeonSkill)
 
-        self.skill._translator_langs = set()
-        self.skill._tts_langs = set()
+        self.skill._translator_langs = {'lang'}
+        self.skill._tts_langs = {'lang'}
 
         # No translator or tts
         self.assertIsNone(self.skill.supported_languages)
