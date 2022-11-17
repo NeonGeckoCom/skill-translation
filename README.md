@@ -1,15 +1,16 @@
-# <img src='https://0000.us/klatchat/app/files/neon_images/icons/neon_skill.png' card_color="#FF8600" width="50" style="vertical-align:bottom">Translation
+# <img src='./logo.svg' card_color="#FF8600" width="50" style="vertical-align:bottom" style="vertical-align:bottom">Translation
 
 ## Summary
 
-Translates phrases between languages.
+Translate phrases between languages.
 
 ## Description
 
 Use this skill to translate individual words or sentences.
 
 ## Examples
-- translate hello to Polish
+- Translate hello to Polish.
+- Translate thank you to Ukrainian.
 
 ## Contact Support
 

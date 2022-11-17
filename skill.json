@@ -1,11 +1,12 @@
 {
     "title": "Translation",
     "url": "https://github.com/NeonGeckoCom/skill-translation",
-    "summary": "Translates phrases between languages.",
-    "short_description": "Translates phrases between languages.",
+    "summary": "Translate phrases between languages.",
+    "short_description": "Translate phrases between languages.",
     "description": "Use this skill to translate individual words or sentences.",
     "examples": [
-        "translate hello to polish"
+        "Translate hello to Polish.",
+        "Translate thank you to Ukrainian."
     ],
     "desktopFile": false,
     "warning": "",
@@ -13,7 +14,7 @@
     "requirements": {
         "python": [
             "neon-lang-plugin-libretranslate~=0.1",
-            "neon-utils>=0.6,<2.0.0"
+            "neon-utils~=1.1"
         ],
         "system": {},
         "skill": []
@@ -28,7 +29,7 @@
     ],
     "branch": "master",
     "license": "BSD-3-Clause",
-    "icon": "https://0000.us/klatchat/app/files/neon_images/icons/neon_skill.png",
+    "icon": "logo.svg",
     "category": "",
     "categories": [],
     "tags": [
