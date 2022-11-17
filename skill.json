@@ -5,7 +5,8 @@
     "short_description": "Translates phrases between languages.",
     "description": "Use this skill to translate individual words or sentences.",
     "examples": [
-        "translate hello to polish"
+        "translate hello to polish.",
+        "translate thank you to ukrainian."
     ],
     "desktopFile": false,
     "warning": "",
