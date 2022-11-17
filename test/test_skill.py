@@ -75,7 +75,7 @@ class TestSkill(unittest.TestCase):
 
         # tts, no translator
         self.skill._tts_langs = {'en'}
-        self.assertIsNone(self.skill.supported_languages)
+        self.assertEqual(self.skill.supported_languages, set())
 
         # tts and translator
         self.skill._tts_langs = {'en', 'es'}
