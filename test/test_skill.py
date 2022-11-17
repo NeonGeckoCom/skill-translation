@@ -120,10 +120,17 @@ class TestSkill(unittest.TestCase):
                      "lang": "en-us"}))
         self.skill.speak_dialog.assert_called_once_with(
             "phrase_in_language", {"phrase": "hello", "lang": "Spanish"})
-        self.skill.speak.assert_called_once_with(
-            "hola", speaker={"language": "es", "name": "Neon",
-                             "gender": "female", "override_user": True}
-        )
+
+        try:
+            self.skill.speak.assert_called_once_with(
+                "hola", speaker={"language": "es", "name": "Neon",
+                                 "gender": "female", "override_user": True}
+            )
+        except AssertionError:
+            self.skill.speak.assert_called_once_with(
+                "Hola", speaker={"language": "es", "name": "Neon",
+                                 "gender": "female", "override_user": True}
+            )
 
         # Translation unsupported language
         real_translator = self.skill._translator_langs
