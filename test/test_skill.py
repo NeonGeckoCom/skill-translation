@@ -86,11 +86,12 @@ class TestSkill(unittest.TestCase):
         self.skill._tts_langs = real_tts
 
     def test_handle_translate_phrase(self):
+        # TODO: Mock translator or specify testing endpoint
         valid_phrase = "hello"
         invalid_phrase = ""
         valid_language = "spanish"
         invalid_language = ""
-        unsupported_language = "laotian"
+        unsupported_language = "laothian"
 
         # Invalid language
         self.skill.handle_translate_phrase(Message(

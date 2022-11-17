@@ -69,7 +69,11 @@ class Translation(NeonSkill):
         language = message.data.get("language")
         LOG.info(f"language={language}|phrase={phrase}")
         load_language(self.lang)
-        short_code, language = self._get_lang_code_and_name(language)
+        try:
+            short_code, language = self._get_lang_code_and_name(language)
+        except UnsupportedLanguageError as e:
+            LOG.warning(e)
+            short_code = None
         if phrase and short_code:
             if self.supported_languages and \
                     short_code not in self.supported_languages:
