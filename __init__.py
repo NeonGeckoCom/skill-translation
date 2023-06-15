@@ -41,9 +41,9 @@ from lingua_franca.format import pronounce_lang
 from mycroft.skills.core import intent_handler
 
 
-class Translation(NeonSkill):
-    def __init__(self):
-        super(Translation, self).__init__(name="Translation")
+class TranslationSkill(NeonSkill):
+    def __init__(self, **kwargs):
+        NeonSkill.__init__(self, **kwargs)
         self._tts_langs = None
         self._translator_langs = None
 
@@ -150,6 +150,3 @@ class Translation(NeonSkill):
     def stop(self):
         pass
 
-
-def create_skill():
-    return Translation()
