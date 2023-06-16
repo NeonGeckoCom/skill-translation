@@ -32,7 +32,7 @@ from os import getenv, path, walk
 SKILL_NAME = "skill-translation"
 SKILL_PKG = SKILL_NAME.replace('-', '_')
 # skill_id=package_name:SkillClass
-PLUGIN_ENTRY_POINT = f'{SKILL_NAME}.neongeckocom={SKILL_PKG}:Translation'
+PLUGIN_ENTRY_POINT = f'{SKILL_NAME}.neongeckocom={SKILL_PKG}:TranslationSkill'
 BASE_PATH = path.abspath(path.dirname(__file__))
 
 
