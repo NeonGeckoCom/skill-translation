@@ -1,2 +1,2 @@
-how do you say {phrase} in {language}
+how do (you|i) say {phrase} in {language}
 translate {phrase} (to|into) {language}
