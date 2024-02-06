@@ -30,6 +30,10 @@ class TestSkillMethods(SkillTestCase):
     def setUpClass(cls, get_langs) -> None:
         get_langs.return_value = {'en', 'es'}
         SkillTestCase.setUpClass()
+        cls.skill.config_core['language']['translation_module'] = \
+            "libretranslate_plug"
+        cls.skill.config_core['language']['detection_module'] = \
+            "libretranslate_detection_plug"
 
     def test_00_skill_init(self):
         real_translator = self.skill._translator_langs

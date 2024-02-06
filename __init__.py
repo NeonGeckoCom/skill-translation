@@ -38,7 +38,7 @@ from lingua_franca.internal import UnsupportedLanguageError
 from lingua_franca.parse import extract_langcode
 from lingua_franca.format import pronounce_lang
 
-from mycroft.skills.core import intent_handler
+from ovos_workshop.decorators import intent_handler
 
 
 class TranslationSkill(NeonSkill):
