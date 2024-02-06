@@ -1,0 +1,2 @@
+neon-minerva[padatious]~=0.1,>=0.1.1a5
+neon-lang-plugin-libretranslate~=0.1
