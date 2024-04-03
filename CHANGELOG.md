@@ -1,29 +1,28 @@
 # Changelog
 
-## [0.3.1a4](https://github.com/NeonGeckoCom/skill-translation/tree/0.3.1a4) (2023-06-23)
+## [1.0.1a3](https://github.com/NeonGeckoCom/skill-translation/tree/1.0.1a3) (2024-04-03)
 
-[Full Changelog](https://github.com/NeonGeckoCom/skill-translation/compare/0.3.1a3...0.3.1a4)
-
-**Merged pull requests:**
-
-- Update translate\_phrase.intent [\#49](https://github.com/NeonGeckoCom/skill-translation/pull/49) ([NeonClary](https://github.com/NeonClary))
-
-## [0.3.1a3](https://github.com/NeonGeckoCom/skill-translation/tree/0.3.1a3) (2023-06-16)
-
-[Full Changelog](https://github.com/NeonGeckoCom/skill-translation/compare/0.3.1a2...0.3.1a3)
+[Full Changelog](https://github.com/NeonGeckoCom/skill-translation/compare/1.0.1a2...1.0.1a3)
 
 **Merged pull requests:**
 
-- Fix plugin entrypoint [\#48](https://github.com/NeonGeckoCom/skill-translation/pull/48) ([NeonDaniel](https://github.com/NeonDaniel))
+- Update test dependency to stable version [\#53](https://github.com/NeonGeckoCom/skill-translation/pull/53) ([NeonDaniel](https://github.com/NeonDaniel))
 
-## [0.3.1a2](https://github.com/NeonGeckoCom/skill-translation/tree/0.3.1a2) (2023-06-15)
+## [1.0.1a2](https://github.com/NeonGeckoCom/skill-translation/tree/1.0.1a2) (2024-02-06)
 
-[Full Changelog](https://github.com/NeonGeckoCom/skill-translation/compare/0.3.0...0.3.1a2)
+[Full Changelog](https://github.com/NeonGeckoCom/skill-translation/compare/1.0.1a1...1.0.1a2)
 
 **Merged pull requests:**
 
-- Update GH automation to best practices [\#47](https://github.com/NeonGeckoCom/skill-translation/pull/47) ([NeonDaniel](https://github.com/NeonDaniel))
-- Deprecate create\_skill method and Update \_\_init\_\_ for best practices [\#45](https://github.com/NeonGeckoCom/skill-translation/pull/45) ([NeonDaniel](https://github.com/NeonDaniel))
+- Support ovos-utils 0.1 [\#51](https://github.com/NeonGeckoCom/skill-translation/pull/51) ([NeonDaniel](https://github.com/NeonDaniel))
+
+## [1.0.1a1](https://github.com/NeonGeckoCom/skill-translation/tree/1.0.1a1) (2024-02-06)
+
+[Full Changelog](https://github.com/NeonGeckoCom/skill-translation/compare/1.0.0...1.0.1a1)
+
+**Merged pull requests:**
+
+- Update skill for ovos-workshop compat [\#52](https://github.com/NeonGeckoCom/skill-translation/pull/52) ([NeonDaniel](https://github.com/NeonDaniel))
 
 
 
